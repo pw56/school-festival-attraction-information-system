@@ -2,7 +2,7 @@
 
 ## 現場デバイスのウェブページ
 1. デバイスの負荷を抑えるため、1秒に1回カメラ映像からペアの数をカウント
-  1. MediaPipe Object Detectionで人物を検出して、ROI抽出
+  1. MediaPipe Object Detecterで人物を検出して、ROI抽出
   2. MediaPipe Face Landmarkerを用いてそれぞれの人の顔の向きを検出してペア候補を検出
   3. 前後のフレームの結果を組み合わせてペアの確定
 2. 送信の頻度が比較的少ないので、10秒に1回、Fetch APIでクラウドに待機列の人数とペアの数を送信
