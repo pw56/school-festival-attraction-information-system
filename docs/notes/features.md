@@ -8,10 +8,9 @@
 例
 ```
 profiles
-exciting_coaster
-├─ thumbnail.png
-├─ description.txt
-└─ setting.yml
+└─ exciting_coaster
+   ├─ thumbnail.png
+   └─ setting.yml
 ```
 
 ## 全体
