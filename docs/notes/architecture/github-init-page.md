@@ -1,0 +1,4 @@
+# GitHub側の初期化ページ
+
+- GitHub Pagesに初期化に必要な操作をするページをデプロイして、READMEにリンクボタン載せる
+- ページでCloudflare連携ボタンを押すとGitHubとCloudflareのOAuthでトークン取得して自動で連携して、GitHub ActionsはAPIからのトリガーでREADMEにCloudflareにデプロイされた設定ページのリンクボタンを載せる
