@@ -1,9 +1,40 @@
 name: "ワクワクコースター" # 出し物のフォルダ名がデータ連携の結合キーも兼ねるので、設定は不要
 description: "ポップなスニーカーのコースターに乗って洞窟の中を駆け回る。大迫力のイケボが聞こえてくる。最新技術を使った口臭の再現も！"
-operating_hours:
-  - "9:00-12:00"
-  - "12:30-16:00"
-duration: "約5分"
+operating_hour_rules:
+  # 可変長の配列なのでいくらでも設定できる
+  # ルール1 → ルール2 → ルール3の順で解釈される
+
+  timezone: "Asia/Tokyo" # 時刻にタイムゾーンを持たせると日程がズレる場合があるので全体で保持、IANAタイムゾーンデータベースを使用
+  rules:
+    # ルール1: 最優先(特定の日付範囲)
+    - condition: "date_range"
+      start_date: "2026-07-20"
+      end_date: "2026-07-20"
+      operating_hours:
+      - ["9:00", "17:00"]
+
+    - condition: "date_range"
+      start_date: "2026-07-25"
+      end_date: "2026-07-28"
+      operating_hours:
+      - ["9:00", "17:00"]
+      - ["22:00", "0:20"] # 終了時刻が開始時刻より前なら翌日とみなす
+
+    # ルール2: 優先(特定の曜日)
+    - condition: "day_of_week"
+      target: ["sat", "sun"]
+      operating_hours:
+      - ["10:00", "15:00"]
+    
+    # ルール3: 最下部(どれにも該当しない場合のフォールバック)
+    - condition: "default"
+      operating_hours:
+      - ["09:00", "12:00"]
+      - ["12:30", "16:00"]
+
+duration:
+  duration_seconds: 300
+  is_approximate: true
 location:
   lat: 35.8 # 登録された位置情報の精度に依存、大抵の場合はこれより高精度
   lng: 139.4
