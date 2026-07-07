@@ -5,4 +5,4 @@
 - 出し物一覧のような更新頻度の少ない公開API: JSONファイル(Cloudflare Pagesにファイルとしてデプロイして、キャッシュ禁止で実質API)
 - 整理券の取得・認証: Cloudflare Workers + Cloudflare D1
 - 整理券のIDを使った、整理券の情報の取得: JSONファイル(Cloudflare Pagesにファイルとしてデプロイして、キャッシュ禁止で実質API)
-  ※ リンクがUUIDなのでそもそも狙われにくい
+  ※ エンドポイントがUUIDなのでそもそも狙われにくい
