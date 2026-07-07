@@ -38,6 +38,10 @@ duration:
   duration_seconds: 300
   is_approximate: true
 
+  # `is_approximate` キーが `true` だと使える項目
+  # ±n秒の形式
+  margin_seconds: 120
+
 location:
   lat: 35.8 # 登録された位置情報の精度に依存、大抵の場合はこれより高精度
   lng: 139.4
