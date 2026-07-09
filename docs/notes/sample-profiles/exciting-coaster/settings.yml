@@ -103,5 +103,3 @@ available_ticket_slots:
     - condition: "default" # 時間の枠ごとに分けて書く
       target_period: ["23:30", "0:00"] # このシステムは23:59までしか指定できない
       remaining_tickets: 9
-
-      
