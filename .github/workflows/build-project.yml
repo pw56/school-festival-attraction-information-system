@@ -1,0 +1,21 @@
+name: Build Project
+
+on:
+  push:
+    paths:
+      - 'apps/**'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: apps
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Build React App
+        uses: mmedoo/build-react-on-push@v1.3
