@@ -38,7 +38,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: './'
+          path: './tests'
 
       # 2. GitHub Pages へのデプロイ
       - name: Deploy to GitHub Pages
