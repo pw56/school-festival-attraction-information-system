@@ -12,6 +12,10 @@ permissions:
   pages: write
   id-token: write
 
+defaults:
+  run:
+    working-directory: ./tests
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -34,7 +38,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: './dist'
+          path: './tests'
 
       # 2. GitHub Pages へのデプロイ
       - name: Deploy to GitHub Pages
