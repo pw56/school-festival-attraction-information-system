@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  base: '/school-festival-attraction-information-system/', 
+  base: '/school-festival-attraction-information-system/pair-detector/dist/', 
 })
