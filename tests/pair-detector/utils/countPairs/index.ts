@@ -8,13 +8,13 @@ let isFirstCall: boolean = true;
 async function initializeDetector() {
   // @mediapipe/tasks-vision のwasmファイル群が配置されている正しいパスを指定
   const vision = await FilesetResolver.forVisionTasks(
-    "https://jsdelivr.net"
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
   );
   
   // runningMode: "VIDEO" で初期化
   objectDetector = await ObjectDetector.createFromOptions(vision, {
     baseOptions: {
-      modelAssetPath: `https://googleapis.com`, // 実際の.tfliteモデルのURL（例: efficientdet_lite0.tflite）を指定
+      modelAssetPath: "https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float16/1/efficientdet_lite0.tflite", // 実際の.tfliteモデルのURLを指定
       delegate: "GPU" // パフォーマンス向上のためGPUを優先（利用可能な場合）
     },
     runningMode: "VIDEO"
