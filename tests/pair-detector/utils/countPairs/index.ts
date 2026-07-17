@@ -1,10 +1,9 @@
 import { ObjectDetector, FilesetResolver } from '@mediapipe/tasks-vision';
-import { createVideoFromStream } from '../createVideoFromStream';
 
 let objectDetector: ObjectDetector | null = null;
 let isFirstCall: boolean = true;
 
-// 1. Detectorの初期化
+// Detectorの初期化
 async function initializeDetector() {
   // @mediapipe/tasks-vision のwasmファイル群が配置されている正しいパスを指定
   const vision = await FilesetResolver.forVisionTasks(
@@ -21,10 +20,10 @@ async function initializeDetector() {
   });
 }
 
-// 3. フレームごとの検出ループ (detectForVideo)
+// フレームごとの検出ループ
 async function startCountPairs
 (
-  stream: MediaStream, 
+  videoElement: HTMLVideoElement, 
   onCountChanged: (count: number) => void
 ): Promise<() => void> {
 
@@ -35,8 +34,6 @@ async function startCountPairs
   }
 
   if (!objectDetector) throw new Error('Model not found');
-
-  const videoElement = createVideoFromStream(stream);
 
   // 実行フラグと前回のタイムスタンプは「関数スコープ内」で個別に管理する
   let isPlaying = true;
