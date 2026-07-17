@@ -57,8 +57,11 @@ async function startCountPairs
         const result = objectDetector.detectForVideo(videoElement, startTimeMs);
         lastTimestamp = startTimeMs; // タイムスタンプを更新
         
-        const people = result.detections.filter((detection) => {
-          return detection.categories.some(category => category.categoryName === 'person');
+        const people = result.detections.filter((detection: Detection) => {
+          return detection.categories.some((category: Category) => {
+            // 信頼度（スコア）が50%以上の人物のみに絞り込む
+            return category.categoryName === 'person' && category.score > 0.5;
+          });
         });
 
         onCountChanged(people.length);
