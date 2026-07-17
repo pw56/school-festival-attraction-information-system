@@ -1,4 +1,4 @@
-import { ObjectDetector, FilesetResolver } from '@mediapipe/tasks-vision';
+import { ObjectDetector, FilesetResolver, Detection, Category } from '@mediapipe/tasks-vision';
 
 let objectDetector: ObjectDetector | null = null;
 let isFirstCall: boolean = true;
