@@ -1,0 +1,11 @@
+{
+  "name": "operations-side",
+  "private": true,
+  "workspaces": [
+    "site-info-transmitters"
+  ],
+  "scripts": {
+    "build:site-info-transmitters": "npm run build --workspace=site-info-transmitters",
+    "build": "npm run build:site-info-transmitters"
+  }
+}
