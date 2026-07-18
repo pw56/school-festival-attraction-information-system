@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import './global.css';
 import Webcam from 'react-webcam';
 import PairCountDisplay from './components/PairCountDisplay';
 import countPairs from './utils/countPairs';
