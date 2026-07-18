@@ -5,13 +5,26 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-webcam": "^7.2.0",
+    "storybook": "^10.5.2",
     "vite": "^8.1.4"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3"
+    "@types/react-dom": "^19.2.3",
+    "@storybook/react-vite": "^10.5.2",
+    "@chromatic-com/storybook": "^5.2.1",
+    "@storybook/addon-vitest": "^10.5.2",
+    "@storybook/addon-a11y": "^10.5.2",
+    "@storybook/addon-docs": "^10.5.2",
+    "prop-types": "^15.8.1",
+    "vitest": "^4.1.10",
+    "playwright": "^1.61.1",
+    "@vitest/browser-playwright": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.10"
   },
   "scripts": {
-    "build": "npx vite build"
+    "build": "npx vite build",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   }
 }
