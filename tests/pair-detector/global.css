@@ -1,15 +1,1 @@
 @import "tailwindcss";
-
-/* 全体のリセットと中央配置の設定 */
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    background-color: transparent; /* 背景を無色に設定 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    overflow: hidden;
-}
