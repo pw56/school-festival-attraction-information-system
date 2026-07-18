@@ -1,0 +1,11 @@
+{
+  "name": "site-info-transmitters",
+  "private": true,
+  "workspaces": [
+    "wait-time-info-transmitter"
+  ],
+  "scripts": {
+    "build:wait-time-info-transmitter": "npm run build --workspace=wait-time-info-transmitter",
+    "build": "npm run build:wait-time-info-transmitter"
+  }
+}
