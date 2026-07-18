@@ -27,7 +27,7 @@ const App = () => {
     setStatusText("カメラエラー");
   };
 
-  // 1秒ごとにスクショを撮影して組数検出メソッドに流すタイマー
+  // 1秒ごとにスクショを撮影してグループ数検出メソッドに流すタイマー
   useEffect(() => {
     const timer = setInterval(async () => {
       if (!webcamRef.current) return;
@@ -60,7 +60,7 @@ const App = () => {
         <p className="absolute top-10 text-gray-400 text-sm animate-pulse">{statusText}</p>
       )}
 
-      {/* ペア数表示コンポーネント */}
+      {/* グループ数表示コンポーネント */}
       <PairCountDisplay count={pairs} />
 
       {/* 
