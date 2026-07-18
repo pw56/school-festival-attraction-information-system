@@ -6,7 +6,7 @@ const PairCountDisplay = ({ count }: {count: number}) => {
       <span 
         className="block text-center font-bold text-[#333333] whitespace-pre-wrap text-[8rem] leading-none"
       >
-        ペアの数: {count}組
+        グループの数: {count}グループ
       </span>
     </div>
   );

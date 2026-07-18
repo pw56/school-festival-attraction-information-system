@@ -21,7 +21,7 @@ async function initializeDetector(): Promise<void> {
   }
 }
 
-// 組数の検出 (人数をそのまま返す)
+// グループ数の検出 (人数をそのまま返す)
 async function countPairs(imageSource: TexImageSource): Promise<number> {
 
   // 初期化
