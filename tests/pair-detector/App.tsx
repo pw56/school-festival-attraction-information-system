@@ -61,7 +61,7 @@ const App = () => {
       )}
 
       {/* ペア数表示コンポーネント */}
-      <PairCountDisplay>{pairs}</PairCountDisplay>
+      <PairCountDisplay count={pairs} />
 
       {/* 
         react-webcam コンポーネント 
