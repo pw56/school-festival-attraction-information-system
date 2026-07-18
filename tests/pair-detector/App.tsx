@@ -9,6 +9,13 @@ const App = () => {
   const [statusText, setStatusText] = useState<string>("カメラを起動中...");
   const webcamRef = useRef<Webcam | null>(null);
 
+  // カメラ設定
+  const videoConstraints = {
+    width: 1280,
+    height: 720,
+    facingMode: "user"
+  };
+
   // カメラが起動したときのイベントハンドラ
   const handleUserMedia = () => {
     setStatusText("AIモデルを準備中...");
@@ -58,17 +65,18 @@ const App = () => {
 
       {/* 
         react-webcam コンポーネント 
-        - hidden クラス（display: none）を適用しても、内部で getScreenshot() は正常に動作します。
+        - hidden クラス（display: none）を適用すると video タグの影響でスクショが撮れない
       */}
       <Webcam
         audio={false}
         ref={webcamRef}
         screenshotFormat="image/jpeg"
+        videoConstraints={videoConstraints}
         width={640}
         height={480}
         onUserMedia={handleUserMedia}
         onUserMediaError={handleUserMediaError}
-        className="hidden"
+        className="absolute w-px h-px opacity-0 pointer-events-none"
       />
     </main>
   );
