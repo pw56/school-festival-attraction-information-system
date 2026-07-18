@@ -72,11 +72,9 @@ const App = () => {
         ref={webcamRef}
         screenshotFormat="image/jpeg"
         videoConstraints={videoConstraints}
-        width={640}
-        height={480}
         onUserMedia={handleUserMedia}
         onUserMediaError={handleUserMediaError}
-        className="absolute w-px h-px opacity-0 pointer-events-none"
+        className="absolute top-0 left-0 opacity-1 pointer-events-none"
       />
     </main>
   );
