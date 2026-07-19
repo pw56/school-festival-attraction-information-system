@@ -89,7 +89,7 @@ jobs:
             
             # 【新規追加】1. dist 以外のファイル・フォルダを削除
             echo "Cleaning up non-dist items in $parent_dir..."
-            find "$parent_dir" -mindepth 1 -maxdepth 1 ! -name "dist" -exec rm -rf {}  
+            find "$parent_dir" -mindepth 1 -maxdepth 1 ! -name "dist" -exec rm -rf {} \;
             
             # 2. distの中身（隠しファイル含む全ファイル）を親ディレクトリへ移動
             echo "Flattening: Moving contents of $dist_dir to $parent_dir"
