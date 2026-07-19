@@ -2,9 +2,9 @@
   "name": "tests",
   "private": true,
   "workspaces": [
-    "pair-detector"
+    ""
   ],
   "scripts": {
-    "build": "npm run build --workspace=pair-detector"
+    "build": ""
   }
 }
