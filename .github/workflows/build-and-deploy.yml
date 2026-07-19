@@ -81,25 +81,31 @@ jobs:
           
           mkdir -p "$TARGET_PATH"
           
-          # 1. 一時ワークスペース内の「すべての階層の dist フォルダ」を探し、中身をそれぞれの親に展開
+          # 一時ワークスペース内の「すべての階層の dist フォルダ」を探して処理
           find ./temp_workspace -type d -name "dist" | while read -r dist_dir; do
             parent_dir=$(dirname "$dist_dir")
-            echo "Flattening: Moving contents of $dist_dir to $parent_dir"
+            echo "--------------------------------------------------"
+            echo "Target Directory: $parent_dir"
             
-            # distの中身（隠しファイル含む全ファイル）を親ディレクトリへ移動
+            # 【新規追加】1. dist 以外のファイル・フォルダを削除
+            echo "Cleaning up non-dist items in $parent_dir..."
+            find "$parent_dir" -mindepth 1 -maxdepth 1 ! -name "dist" -exec rm -rf {}  
+            
+            # 2. distの中身（隠しファイル含む全ファイル）を親ディレクトリへ移動
+            echo "Flattening: Moving contents of $dist_dir to $parent_dir"
             if [ "$(ls -A "$dist_dir")" ]; then
               (shopt -s dotglob; mv "$dist_dir"/* "$parent_dir/")
             fi
-            # 空になった dist ディレクトリを削除
+            
+            # 3. 空になった dist ディレクトリを削除
             rmdir "$dist_dir"
           done
           
-          # 2. distの中身が親に展開された状態のファイルを、既存のデプロイ用ワークスペースにコピー（上書き合成）
-          # ※ソースコードやnode_modulesなどの不要ファイルを除外して、公開用のアセットだけを同期します
+          # 最後に、クリーンかつ展開された状態のファイルをデプロイ用ワークスペースにコピー（上書き合成）
+          # ※ルート直下に残っている可能性のある node_modules 等も念のため除外
           rsync -av --exclude='node_modules' \
                     --exclude='package.json' \
                     --exclude='package-lock.json' \
-                    --exclude='src' \
                     ./temp_workspace/ "$TARGET_PATH/"
 
       # 5. 合成済みのディレクトリを GitHub Pages 用にアップロード
