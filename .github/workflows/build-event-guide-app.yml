@@ -1,9 +1,9 @@
-name: Build Tests
+name: Build Event Guide App
 
 on:
   push:
     paths:
-      - 'tests/**'
+      - 'apps/event-guide-app/**'
 
 # GitHub Pages へのデプロイに必要な権限を設定
 permissions:
@@ -18,4 +18,4 @@ jobs:
       - name: Build and Deploy
         uses: ./.github/workflows/build-and-deploy.yml
         with:
-          directory: ./tests
+          directory: ./apps/event-guide-app
