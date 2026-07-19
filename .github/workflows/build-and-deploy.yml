@@ -1,0 +1,87 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  workflow_call:
+    inputs:
+      directory:
+        required: true
+        type: string
+  workflow_dispatch:
+
+# GitHub Pages へのデプロイに必要な権限を設定
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          cache: 'npm'
+          cache-dependency-path: '${{ inputs.directory }}/package-lock.json'
+
+      # 1. 指定されたディレクトリでnpmビルド
+      - name: Install dependencies and Build
+        run: |
+          cd ${{ inputs.directory }}
+          npm ci
+          npm run build
+
+      # 2. 成果物のフォルダのみを特定して、一時保存（後続ジョブへの受け渡し用）
+      # ※ここでは一般的なビルド成果物フォルダ名を「dist」と仮定しています。環境に合わせて変更してください。
+      - name: Upload temporary build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-dist
+          path: ${{ inputs.directory }}/dist/
+
+  deploy:
+    runs-on: ubuntu-latest # wgetや各種アクションの互換性のためlatestを推奨
+    needs: build
+    steps:
+      # 1. 自身のGitHub PagesのトップURLを自動取得して環境変数に格納
+      - name: Get GitHub Pages URL
+        id: pages-info
+        run: |
+          # リポジトリ名を取得（例: owner/repo -> repo）
+          REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
+          # GitHub Pagesの標準的なURL構造を組み立て
+          echo "HOSTED_URL=https://${{ github.repository_owner }}.github.io/$REPO_NAME" >> $GITHUB_ENV
+
+      # 2. 現在ホストされているファイルをwgetでフォルダごと取得
+      - name: Fetch current hosted assets
+        run: |
+          mkdir -p ./deploy_workspace
+          # --mirror: 再帰取得, -p: ページに必要な全ファイル, -nH: ホスト名フォルダを作らない, -P: 保存先
+          wget --mirror -p -K -nH --no-check-certificate -P ./deploy_workspace ${{ env.HOSTED_URL }} || true
+
+      # 3. ビルドジョブから成果物をダウンロード
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: build-dist
+          path: ./temp_dist
+
+      # 4. 成果物のコピーを、指定されたディレクトリに対応する位置へ合成（なければ作成）
+      - name: Merge Artifact into Workspace
+        run: |
+          TARGET_PATH="./deploy_workspace/${{ inputs.directory }}"
+          mkdir -p "$TARGET_PATH"
+          cp -r ./temp_dist/* "$TARGET_PATH/"
+
+      # 5. 合成済みのディレクトリを GitHub Pages 用にアップロード
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: './deploy_workspace'
+
+      # 6. GitHub Pages へのデプロイ
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v5
