@@ -2,9 +2,9 @@
   "name": "tests",
   "private": true,
   "workspaces": [
-    ""
+    "build-test"
   ],
   "scripts": {
-    "build": ""
+    "build": "npm run build --workspace=build-test"
   }
 }

@@ -1,0 +1,7 @@
+{
+  "name": "build-test",
+  "private": true,
+  "scripts": {
+    "build": "node -e \"const fs = require('fs'); if (!fs.existsSync('dist')) fs.mkdirSync('dist'); fs.writeFileSync('dist/index.html', '<h1>Build Success!</h1>'); console.log('Build completed successfully!');\""
+  }
+}
