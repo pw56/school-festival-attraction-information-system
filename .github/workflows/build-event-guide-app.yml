@@ -13,9 +13,6 @@ permissions:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-slim
-    steps:
-      - name: Build and Deploy
-        uses: ./.github/workflows/build-and-deploy.yml
-        with:
-          directory: ./apps/event-guide-app
+    uses: ./.github/workflows/build-and-deploy.yml
+    with:
+      directory: ./apps/event-guide-app
