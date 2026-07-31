@@ -54,15 +54,6 @@ max_party_size: 2 # 1回で案内できる最大の人数
 
 type: "attraction" # システムであらかじめ用意されたものの中から1つ選ぶ
 
-features:
-  - "大きな音がする"
-  - "フラッシュ"
-  - "暗闇を進む"
-  - "怖いキャラクターが登場"
-  - "雨の日も安心"
-  - "揺れない"
-  - "写真映え"
-
 restrictions: "ご利用になる方は健康状態の良い方に限ります。同伴者の補助によっても安定した姿勢を保てない方はご利用になれません。"
 
 accessibility: # システムであらかじめ用意されたものの中から選ぶ
@@ -92,7 +83,7 @@ available_ticket_slots:
       remaining_tickets: 777
     
     - condition: "default"
-      target_period: ["9:00", "9:30"]
+      target_period: ["9:00", "9:30"] # さっきの重複の例
       remaining_tickets: 5
       
     - condition: "default" # 時間の枠ごとに分けて書く
