@@ -46,6 +46,9 @@ paths:
                     message: "Ticket reserved successfully."
 
         '400':
+          description: |
+            不正なリクエスト。
+            主にCLI等でAPIを直接叩いた場合を想定。
           content:
             application/json:
               schema:
@@ -57,6 +60,9 @@ paths:
                   - message: "Invalid ticket slots."
 
         '409':
+          description: |
+            指定された枠にチケットが既に予約されている場合。
+            主にCLI等でAPIを直接叩いた場合を想定。
           content:
             application/json:
               schema:
