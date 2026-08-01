@@ -1,0 +1,68 @@
+openapi: 3.1.0
+info:
+  title: reserve
+  description: 指定した出し物の整理券を取得するAPI。
+  version: 1.0.0
+paths:
+  /api/tickets/reserve:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+
+              properties:
+                attraction_id:
+                  type: string
+                  description: 取得対象の出し物ID。
+                scheduled_time:
+                  type: [string, "null"]
+                  description: （オプション）時間指定がある場合の ISO8601 形式の時刻。無ければ `null`。
+              
+              required:
+                - attraction_id
+                - scheduled_time
+
+      responses:
+
+        '200':
+          description: |
+            チケットのIDとメッセージ。
+            チケットの情報は別のAPIで取得するので、このAPIでは返さない。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ticket_id:
+                    type: string
+                    description: UUID
+                  message:
+                    type: string
+                examples:
+                  - ticket_id: "5f2d28d2-5d18-21e8-f32b-dafb0a67babb"
+                    message: "Ticket reserved successfully."
+
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                examples:
+                  - message: "Invalid ticket slots."
+
+        '409':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                examples:
+                  - message: "User already has a ticket in this time slot."
