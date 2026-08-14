@@ -9,5 +9,8 @@
   - GitHubのOAuthはCORS制限があるため、作者でCloudflareでホストするトークン取得専用Workerを中継してトークン取得
   - そのWorkerは独立した作者が管理するCloudflareプロジェクトで、ユーザーには関係ない
   - CloudflareのOAuth取得はPKCEを使うのでシークレットは不要、ただしCORS制限回避のためこちらも中継Workerが必要
+  - Firebase連携は、Firebaseの全権をもらうため「Google Cloudプラットフォームの全データの管理」の要求が出るページに飛ばす
+  - Firebaseもプロジェクト作成から自動化するので、肥大化した権限の要求を容認する
+  - アプリに必要なFCMのウェブ構成オブジェクトは、ビルド前に動的に設定ファイルに注入
 - `auto-setup.yml`は発火したら自動でビルドを回して、送られてきた認証トークンを使って各サービスに自動デプロイ
 - `auto-setup.yml`は、Cloudflare Pagesデプロイ後に返ってきたURLを、`.github/steps/after-deploy.md`のバッジに注入して、リポジトリのREADMEに上書きしてプッシュ
