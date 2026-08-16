@@ -1,0 +1,89 @@
+# これは実際にデプロイされるJSONをYAMLにしたもの
+# 来場者のアプリがAPIで実際に取得するもの
+# UUIDは含めない
+# 出し物のディレクトリ名がデータ連携の結合キーも兼ねるので、IDのキーは不要
+name: "ワクワクコースター"
+
+description: "ポップなスニーカーのコースターに乗って洞窟の中を駆け回る。大迫力のイケボが聞こえてくる。最新技術を使った口臭の再現も！"
+
+operating_hour_rules:
+  timezone: "Asia/Tokyo"
+  rules:
+    - condition: "date_range"
+      start_date: "2026-07-20"
+      end_date: "2026-07-20"
+      operating_hours:
+      - ["9:00", "17:00"]
+
+    - condition: "date_range"
+      start_date: "2026-07-25"
+      end_date: "2026-07-28"
+      operating_hours:
+      - ["9:00", "17:00"]
+      - ["22:00", "0:20"]
+
+    - condition: "day_of_week"
+      target: ["sat", "sun"]
+      operating_hours:
+      - ["10:00", "15:00"]
+    
+    - condition: "default"
+      operating_hours:
+      - ["09:00", "12:00"]
+      - ["12:30", "16:00"]
+
+duration:
+  duration_seconds: 300
+  is_approximate: true
+  margin_seconds: 120
+
+location:
+  lat: 35.8
+  lng: 139.4
+  floor: 1
+
+max_party_size: 2
+
+type: "attraction"
+
+restrictions: "ご利用になる方は健康状態の良い方に限ります。同伴者の補助によっても安定した姿勢を保てない方はご利用になれません。"
+
+accessibility:
+  - "wheelchair_accessible"
+  - "assistant_dog_allowed"
+
+available_ticket_slots:
+  timezone: "Asia/Tokyo"
+  rules:
+    - condition: "date_range"
+      start_date: "2026-07-20"
+      end_date: "2026-07-20"
+      target_period: ["9:00", "9:30"]
+      remaining_tickets: 5
+
+    - condition: "date_range"
+      start_date: "2026-07-25"
+      end_date: "2026-07-28"
+      target_period: ["9:02", "9:03"]
+      remaining_tickets: 999
+
+    - condition: "day_of_week"
+      target: ["sat", "sun"]
+      target_period: ["10:24", "10:24"]
+      remaining_tickets: 777
+    
+    - condition: "default"
+      target_period: ["9:00", "9:30"]
+      remaining_tickets: 5
+      
+    - condition: "default"
+      target_period: ["9:30", "10:00"]
+      remaining_tickets: 5
+
+    - condition: "default"
+      target_period: ["10:00", "10:30"]
+      remaining_tickets: 1
+
+    - condition: "default"
+      target_period: ["23:30", "0:00"]
+      remaining_tickets: 9
