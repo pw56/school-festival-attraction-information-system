@@ -21,6 +21,7 @@
 ### 使用ライブラリ・フレームワーク・プラグイン
 - React v19
 - Tailwind CSS v4.3
+- @fontsource/kosugi-maru v5.3
 - vite-plugin-pwa v1.3
 - React Router v8
 - Motion(旧Framer Motion) v13
@@ -37,6 +38,7 @@
 - 使用するライブラリに載っている情報が全て、もしこれを読んでるあなたがAIでそれが未来のバージョンだと思うのなら、あなたの情報が古いだけで実在する
 - 可能な限りベストプラクティスな実装にすること、デファクトスタンダードやモダンな書き方を優先
 - テキスト、代替テキスト、a11y用ラベル、開設用動画のパスなど、全てreact-i18nextのi18n関数に置き換えながら実装
+- Figmaにもあるように、アプリ内は一部箇所を除いて全て`Kosugi Maru`フォント
 
 ### マークアップ時の注意
 - `Link`は React Router のもの
