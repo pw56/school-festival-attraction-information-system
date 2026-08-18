@@ -19,53 +19,82 @@ async function convertFigToJson(inputFilePath, outputFilePath) {
     // 元々のOpenFigが吐くJSONを、ページやレイヤーなどのFigmaのデザインファイルと全く同じように構造(ツリー)が対応するように調整する処理を追加
     // ※ 内部のIDは消さずに残す
     
+    // guidオブジェクトから一意の文字列キーを生成するヘルパー関数
+    function getGuidKey(guid) {
+      if (!guid) return '';
+      return `${guid.sessionID}-${guid.localID}`;
+    }
+
     // 1. 全ノードのディープコピーを作成し、absoluteRenderBoundsを削除する共通処理
     const cleanNodes = {};
-    for (const [id, node] of Object.entries(nodeTree.nodes || {})) {
+    const nodesArray = nodeTree.nodes || [];
+
+    for (const node of nodesArray) {
+      if (!node || !node.guid) continue;
+      
       const copy = JSON.parse(JSON.stringify(node));
       if (copy.absoluteRenderBounds !== undefined) {
         delete copy.absoluteRenderBounds;
       }
-      cleanNodes[id] = copy;
+      
+      const key = getGuidKey(copy.guid);
+      cleanNodes[key] = copy;
+    }
+
+    // 各親ノードの文字列キーに対して、子ノードのguidオブジェクトの配列を格納するマップを自前で構築
+    const customChildrenMap = {};
+    for (const node of nodesArray) {
+      if (!node || !node.guid || !node.parentIndex || !node.parentIndex.guid) continue;
+      
+      const parentKey = getGuidKey(node.parentIndex.guid);
+      if (!customChildrenMap[parentKey]) {
+        customChildrenMap[parentKey] = [];
+      }
+      // 子ノードの元のオブジェクト内のguidをそのまま追加
+      customChildrenMap[parentKey].push(node.guid);
     }
 
     // 2. ツリー構造を再構築する関数
-    function buildTree(nodeId) {
-      const node = cleanNodes[nodeId];
+    function buildTree(nodeGuidKey) {
+      const node = cleanNodes[nodeGuidKey];
       if (!node) return null;
 
-      // childrenMapから子ノードのIDリストを取得
-      const childIds = nodeTree.childrenMap?.[nodeId] || [];
-      if (childIds.length > 0) {
-        node.children = childIds
-          .map(id => buildTree(id))
+      // 自前で構築したマッピングから子ノードのID（guid）リストを取得
+      const childGuids = customChildrenMap[nodeGuidKey] || [];
+
+      if (childGuids.length > 0) {
+        node.children = childGuids
+          .map(childGuid => {
+            const childKey = getGuidKey(childGuid);
+            return buildTree(childKey);
+          })
           .filter(child => child !== null);
       }
       return node;
     }
 
-    // ルートとなるDOCUMENTノードを特定
-    const rootId = nodeTree.rootId || '0:0';
-    const originalDocument = cleanNodes[rootId];
-
-    if (!originalDocument) {
+    // ルートとなるDOCUMENTノードを配列から特定
+    const rootNode = nodesArray.find(n => n && n.type === 'DOCUMENT');
+    if (!rootNode || !rootNode.guid) {
       throw new Error('DOCUMENTノードが見つかりません。');
     }
+    const rootId = getGuidKey(rootNode.guid);
 
-    // DOCUMENT直下の子ノード（通常はCANVAS型 = ページ）のIDリスト
-    const pageIds = nodeTree.childrenMap?.[rootId] || [];
+    // DOCUMENT直下の子ノード（通常はCANVAS型 = ページ）のIDリストを取得
+    const pageGuids = customChildrenMap[rootId] || [];
 
     // 出力フォルダのパスを確定（引数のoutputFilePathを出力フォルダのベースパスとして使用）
     const outputDir = outputFilePath;
     await fs.mkdir(outputDir, { recursive: true });
 
     // 各ページごとに処理を行い、パターンBの構造で保存
-    for (const pageId of pageIds) {
-      const pageNode = cleanNodes[pageId];
+    for (const pageGuid of pageGuids) {
+      const pageKey = getGuidKey(pageGuid);
+      const pageNode = cleanNodes[pageKey];
       if (!pageNode) continue;
 
-      // ページ名を取得（デフォルト値：pageId）
-      const pageName = pageNode.name || pageId;
+      // ページ名を取得（デフォルト値：文字列化したキー）
+      const pageName = pageNode.name || pageKey;
 
       // Linuxの禁止文字（スラッシュ '/' と NULL文字 '\0'）を削除
       const safePageName = pageName.replace(/[\/\0]/g, '');
@@ -78,15 +107,17 @@ async function convertFigToJson(inputFilePath, outputFilePath) {
       const documentRoot = buildTree(rootId);
       
       // 該当するページだけのツリーを構築して格納
-      const pageTree = buildTree(pageId);
-      documentRoot.children = pageTree ? [pageTree] : [];
+      const pageTree = buildTree(pageKey);
+      if (documentRoot) {
+        documentRoot.children = pageTree ? [pageTree] : [];
 
-      // 3. パースされたオブジェクトをインデント付きのJSON文字列に変換
-      const jsonString = JSON.stringify(documentRoot, null, 2);
+        // 3. パースされたオブジェクトをインデント付きのJSON文字列に変換
+        const jsonString = JSON.stringify(documentRoot, null, 2);
 
-      // 4. JSONファイルとして保存
-      await fs.writeFile(targetJsonPath, jsonString, 'utf-8');
-      console.log(`[ページ出力完了] JSONファイルが正常に出力されました: ${targetJsonPath}`);
+        // 4. JSONファイルとして保存
+        await fs.writeFile(targetJsonPath, jsonString, 'utf-8');
+        console.log(`[ページ出力完了] JSONファイルが正常に出力されました: ${targetJsonPath}`);
+      }
     }
     
     console.log(`[完了] 全ページのJSONファイルが正常に出力されました: ${outputDir}`);
