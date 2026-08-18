@@ -1,0 +1,1 @@
+// `TicketQrScanView`からしか呼ばれない
