@@ -3,6 +3,8 @@ import { parseFig } from 'openfig-core'; // もしパッケージ名が openfig-
 
 // 依存関係としてpathモジュールをインポート
 import * as path from 'path';
+// YAML変換用のライブラリをインポート
+import yaml from 'yaml';
 
 async function convertFigToJson(inputFilePath, outputFilePath) {
   try {
@@ -99,8 +101,8 @@ async function convertFigToJson(inputFilePath, outputFilePath) {
       // Linuxの禁止文字（スラッシュ '/' と NULL文字 '\0'）を削除
       const safePageName = pageName.replace(/[\/\0]/g, '');
 
-      // デザインファイルの同じ構造でJSONファイルにする(出力フォルダ → ページ名.json)
-      const targetJsonPath = path.join(outputDir, `${safePageName}.json`);
+      // デザインファイルの同じ構造でYAMLファイルにする(出力フォルダ → ページ名.yaml)
+      const targetYamlPath = path.join(outputDir, `${safePageName}.yaml`);
 
       // パターンB: DOCUMENTをルートにして、childrenには該当する1つのページのみを格納
       // DOCUMENT自体のツリーを再構築
@@ -111,16 +113,17 @@ async function convertFigToJson(inputFilePath, outputFilePath) {
       if (documentRoot) {
         documentRoot.children = pageTree ? [pageTree] : [];
 
-        // 3. パースされたオブジェクトをインデント付きのJSON文字列に変換
-        const jsonString = JSON.stringify(documentRoot, null, 2);
+        // 3. パースされたオブジェクトをインデント付きのYAML文字列に変換
+        // yamlパッケージのstringifyを使用。折返しを防ぐため lineWidth: 0 を設定
+        const yamlString = yaml.stringify(documentRoot, { lineWidth: 0 });
 
-        // 4. JSONファイルとして保存
-        await fs.writeFile(targetJsonPath, jsonString, 'utf-8');
-        console.log(`[ページ出力完了] JSONファイルが正常に出力されました: ${targetJsonPath}`);
+        // 4. YAMLファイルとして保存
+        await fs.writeFile(targetYamlPath, yamlString, 'utf-8');
+        console.log(`[ページ出力完了] YAMLファイルが正常に出力されました: ${targetYamlPath}`);
       }
     }
     
-    console.log(`[完了] 全ページのJSONファイルが正常に出力されました: ${outputDir}`);
+    console.log(`[完了] 全ページのYAMLファイルが正常に出力されました: ${outputDir}`);
   } catch (error) {
     console.error('[エラーが発生しました]', error);
   }

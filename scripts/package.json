@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "openfig-core": "^0.4.1"
+    "openfig-core": "^0.4.1",
+    "yaml": "^2.9.0"
   }
 }
