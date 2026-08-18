@@ -27,6 +27,25 @@ async function convertFigToJson(inputFilePath, outputFilePath) {
       return `${guid.sessionID}-${guid.localID}`;
     }
 
+    // 指定された不要なプロパティを再帰的に削除する関数を追加
+    function removeUnnecessaryKeys(obj) {
+      if (Array.isArray(obj)) {
+        obj.forEach(item => removeUnnecessaryKeys(item));
+      } else if (obj !== null && typeof obj === 'object') {
+        const keysToDelete = [
+          'editInfo', 'userId', 'lastEditedAt', 'createdAt', 
+          'pluginData', 'exportSettings', 'imageThumbnail', 
+          'hash', 'thumbHash', 'commandsBlob'
+        ];
+        keysToDelete.forEach(key => {
+          if (key in obj) {
+            delete obj[key];
+          }
+        });
+        Object.values(obj).forEach(value => removeUnnecessaryKeys(value));
+      }
+    }
+
     // 1. 全ノードのディープコピーを作成し、absoluteRenderBoundsを削除する共通処理
     const cleanNodes = {};
     const nodesArray = nodeTree.nodes || [];
@@ -38,6 +57,9 @@ async function convertFigToJson(inputFilePath, outputFilePath) {
       if (copy.absoluteRenderBounds !== undefined) {
         delete copy.absoluteRenderBounds;
       }
+      
+      // 追加: 階層の深い箇所にある対象キーもまとめて削除
+      removeUnnecessaryKeys(copy);
       
       const key = getGuidKey(copy.guid);
       cleanNodes[key] = copy;
