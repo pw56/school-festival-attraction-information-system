@@ -1,0 +1,17 @@
+name: Build Site Info Transmitters for Dev
+
+on:
+  push:
+    paths:
+      - 'apps/site-info-transmitters/**'
+
+# GitHub Pages へのデプロイに必要な権限を設定
+permissions:
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy-for-dev:
+    uses: ./.github/workflows/build-and-deploy-for-dev.yml
+    with:
+      directory: ./apps/site-info-transmitters
