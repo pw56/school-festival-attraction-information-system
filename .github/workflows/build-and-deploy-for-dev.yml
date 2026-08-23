@@ -1,0 +1,31 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  workflow_call:
+    inputs:
+      directory:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      directory:
+        required: true
+        type: string
+        default: '.'
+
+# 別ワークフローの呼び出しで使われる GitHub Pages へのデプロイに必要な権限を設定
+permissions:
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      directory: ${{ github.event.inputs.directory || inputs.directory }}
+
+  deploy:
+    needs: build
+    uses: ./.github/workflows/deploy-github-for-dev.yml
+    with:
+      directory: ${{ github.event.inputs.directory || inputs.directory }}
