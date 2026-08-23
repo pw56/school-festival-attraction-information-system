@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import './global.css';
 import { getGroups, Groups } from './getGroups';
-import { videoToImageAsync } from './utils/toImage';
+import { videoToImageAsync } from './utils/videoToImageAsync';
 import { ImageCropper, ImageCropperRef } from './ImageCropper';
 import QrScanner from 'qr-scanner';
 import { isValidSecretUuid } from '../../utils/services/isValidSecretUuid';
