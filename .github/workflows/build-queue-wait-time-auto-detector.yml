@@ -1,9 +1,9 @@
-name: Build Operations Side
+name: Build Site Info Transmitters
 
 on:
   push:
     paths:
-      - 'apps/operations-side/**'
+      - 'apps/site-info-transmitters/**'
 
 # GitHub Pages へのデプロイに必要な権限を設定
 permissions:
@@ -14,4 +14,4 @@ jobs:
   build-and-deploy-for-dev:
     uses: ./.github/workflows/build-and-deploy-for-dev.yml
     with:
-      directory: ./apps/operations-side
+      directory: ./apps/site-info-transmitters

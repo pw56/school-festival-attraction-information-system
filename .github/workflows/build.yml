@@ -1,0 +1,65 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      directory:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Check if package-lock.json exists
+        id: check_lock
+        run: |
+          TARGET_DIR="${{ github.event.inputs.directory || inputs.directory }}"
+          if [ -f "${TARGET_DIR}/package-lock.json" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Node.js
+        if: steps.check_lock.outputs.exists == 'true'
+        uses: actions/setup-node@v7
+        with:
+          cache: 'npm'
+          cache-dependency-path: '${{ github.event.inputs.directory || inputs.directory }}/package-lock.json'
+
+      # 1. 指定されたルートディレクトリでビルド（サブディレクトリのdistも自動生成される）
+      - name: Install dependencies and Build
+        run: |
+          REQ_DIR="${{ github.event.inputs.directory || inputs.directory }}"
+          if [ "$REQ_DIR" = "./src" ] || [ "$REQ_DIR" = "src" ]; then
+            echo "Directory is src. Building all subdirectories in parallel..."
+            cd "$REQ_DIR"
+            # package.json が存在する全サブフォルダをバックグラウンド並列実行
+            for dir in */ ; do
+              if [ -f "${dir}package.json" ]; then
+                (
+                  echo "Starting build in: $dir"
+                  cd "$dir"
+                  npm ci
+                  npm run build
+                  echo "Finished build in: $dir"
+                ) &
+              fi
+            done
+            wait
+          else
+            cd "$REQ_DIR"
+            npm ci
+            npm run build
+          fi
+
+      # 2. 生成されたすべての dist を含む、ルートディレクトリ全体を一時保存
+      - name: Upload temporary build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-workspace
+          path: ${{ github.event.inputs.directory || inputs.directory }}/

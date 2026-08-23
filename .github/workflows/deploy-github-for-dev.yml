@@ -1,0 +1,84 @@
+name: Deploy to GitHub Pages
+
+on:
+  workflow_call:
+    inputs:
+      directory:
+        required: true
+        type: string
+
+# GitHub Pages へのデプロイに必要な権限を設定
+permissions:
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # ビルドジョブから成果物（全階層の dist が入った状態）をダウンロード
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: build-workspace
+          path: ./temp_workspace
+
+      # サブディレクトリを含めたすべての dist の中身を展開し、デプロイ用フォルダへ合成
+      - name: Merge Artifact and Flatten dist folders into Workspace
+        run: |
+          TARGET_DIR="${{ github.event.inputs.directory || inputs.directory }}"
+          
+          TARGET_PATH="./deploy_workspace/$TARGET_DIR"
+          
+          mkdir -p "$TARGET_PATH"
+          
+          # 一時ワークスペース内の「すべての階層の dist フォルダ」を探して処理
+          # Find dist directories but skip anything under node_modules
+          find ./temp_workspace -path "*/node_modules/*" -prune -o -type d -name "dist" -print | while read -r dist_dir; do
+            parent_dir=$(dirname "$dist_dir")
+            echo "--------------------------------------------------"
+            echo "Target Directory: $parent_dir"
+
+            # Skip if parent does not exist (might have been removed by earlier iteration)
+            if [ ! -d "$parent_dir" ]; then
+              echo "Skipping missing parent dir: $parent_dir"
+              continue
+            fi
+
+            # Safety: avoid operating on top-level temp_workspace itself
+            if [ "$parent_dir" = "./temp_workspace" ]; then
+              echo "Skipping top-level temp_workspace"
+              continue
+            fi
+
+            # 1. Remove non-dist items in parent (but preserve node_modules and package files)
+            echo "Cleaning up non-dist items in $parent_dir..."
+            find "$parent_dir" -mindepth 1 -maxdepth 1 ! -name "dist" ! -path "*/node_modules" -exec rm -rf {} \;
+
+            # 2. Move dist contents into the parent directory (use rsync to handle dotfiles safely)
+            echo "Flattening: Moving contents of $dist_dir to $parent_dir"
+            if [ -d "$dist_dir" ] && [ "$(ls -A "$dist_dir")" ]; then
+              rsync -a --remove-source-files "$dist_dir"/ "$parent_dir"/
+              # try to remove the now-empty dist directory (ignore failures)
+              rmdir "$dist_dir" 2>/dev/null || true
+            else
+              echo "No files to move from $dist_dir"
+            fi
+          done
+          
+          # 最後に、クリーンかつ展開された状態のファイルをデプロイ用ワークスペースにコピー（上書き合成）
+          # ※ルート直下に残っている可能性のある node_modules 等も念のため除外
+          rsync -av --exclude='node_modules' \
+                    --exclude='package.json' \
+                    --exclude='package-lock.json' \
+                    ./temp_workspace/ "$TARGET_PATH/"
+
+      # 合成済みのディレクトリを GitHub Pages 用にアップロード
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: './deploy_workspace'
+
+      # GitHub Pages へのデプロイ
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v5
