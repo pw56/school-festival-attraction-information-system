@@ -1,4 +1,4 @@
-name: Build Tests
+name: Build Tests for Dev
 
 on:
   push:
@@ -7,12 +7,11 @@ on:
 
 # GitHub Pages へのデプロイに必要な権限を設定
 permissions:
-  contents: read
   pages: write
   id-token: write
 
 jobs:
-  build-and-deploy:
-    uses: ./.github/workflows/build-and-deploy.yml
+  build-and-deploy-for-dev:
+    uses: ./.github/workflows/build-and-deploy-for-dev.yml
     with:
       directory: ./tests
