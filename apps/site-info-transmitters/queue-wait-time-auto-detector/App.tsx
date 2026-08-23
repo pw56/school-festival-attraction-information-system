@@ -2,37 +2,24 @@ import { useEffect, useRef, useState } from 'react';
 import './global.css';
 import { getGroups, Groups } from './getGroups';
 import { videoToImageAsync } from './utils/toImage';
-import { ImageCropper, ImageCropperRef, CropResult, CroppedBoundingBox } from './ImageCropper';
+import { ImageCropper, ImageCropperRef } from './ImageCropper';
 import QrScanner from 'qr-scanner';
 import { isValidSecretUuid } from './services/isValidSecretUuid';
 import { getEventName } from './utils/getEventName';
 import SettingsIcon from './Settings.svg?react';
 
-// 動画用のグローバルなタイムスタンプ
-// 動画のEffect内の変数だとバウンディングボックスの方で使えないのでグローバル
 let videoTimestamp: number = -1;
 
 const App = () => {
-  // 認証状態の管理
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isSettingOpen, setIsSettingOpen] = useState<boolean>(false);
 
-  // QRスキャナー用Ref
   const qrVideoRef = useRef<HTMLVideoElement | null>(null);
-
-  // アップロードされたメディアの管理用
-  const [mediaSrc, setMediaSrc] = useState<string | null>(null);
-  const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null);
-  
-  // ループ処理で参照するためのRef
-  const imageRef = useRef<HTMLImageElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const cropperRef = useRef<ImageCropperRef | null>(null);
   
-  // 合成結果表示用
-  const [mediaFrame, setMediaFrame] = useState<HTMLImageElement | null>(null);
+  const [currentFrame, setCurrentFrame] = useState<HTMLImageElement | null>(null);
   const [groups, setGroups] = useState<Groups>([]);
-  const [croppedBoundingBox, setCroppedBoundingBox] = useState<CroppedBoundingBox | undefined>(undefined);
 
   // 1. QRスキャナー起動とスキャン処理
   useEffect(() => {
@@ -82,7 +69,6 @@ const App = () => {
           videoRef.current.srcObject = s;
           videoRef.current.play().catch(() => {});
         }
-        setMediaType('video');
       })
       .catch((err) => {
         console.error('カメラの起動に失敗しました', err);
@@ -95,92 +81,28 @@ const App = () => {
     };
   }, [isAuthenticated]);
 
-  // 切り取り範囲が更新・決定された時のハンドラ
-  const handleCropChange = async (cropResult: CropResult) => {
-    if (mediaType === 'image') {
-      if (imageRef.current) {
-        const rawImg = new Image();
-        rawImg.src = imageRef.current.src;
-        await rawImg.decode().catch(() => {});
-        setMediaFrame(rawImg);
-      }
-
-      // 切り取り後のバウンディングボックスを State にセット
-      setCroppedBoundingBox(cropResult.boundingBox);
-
-      const detectedGroups = await getGroups(cropResult.croppedImage);
-      setGroups(detectedGroups);
-    }
-  };
-
-  // メモリリーク対策：アンマウント時にオブジェクトURLを解放
+  // 3. 1秒ごとにカメラ映像を取得してグループ数検出を実行
   useEffect(() => {
-    return () => {
-      if (mediaSrc) URL.revokeObjectURL(mediaSrc);
-    };
-  }, [mediaSrc]);
-
-  // 画像用の1回限りの処理
-  useEffect(() => {
-    if (mediaType === 'image' && imageRef.current) {
-      const processImage = async () => {
-        const rawElement = imageRef.current!;
-
-        // 1. まず元画像を mediaFrame に渡して ImageCropper をレンダリングさせる
-        const rawImg = new Image();
-        rawImg.src = rawElement.src;
-        await rawImg.decode().catch(() => {});
-        setMediaFrame(rawImg);
-
-        // 2. レンダリング後に cropperRef が利用可能になるため、クロップ画像を取得（取得できなければ元画像）
-        let inputElement: HTMLImageElement = rawElement;
-        if (cropperRef.current) {
-          const result = await cropperRef.current.getClippedImage();
-          inputElement = result.croppedImage;
-          setCroppedBoundingBox(result.boundingBox);
-        }
-
-        const detectedGroups = await getGroups(inputElement);
-        setGroups(detectedGroups);
-      };
-      
-      // 画像の読み込み完了を待って処理、または既に読み込み済みの場合は即時実行
-      if (imageRef.current.complete) {
-        processImage();
-      } else {
-        imageRef.current.onload = processImage;
-      }
-    }
-  }, [mediaType, mediaSrc]);
-
-  // 1秒ごとにメディアからデータを取得してグループ数検出メソッドに流すタイマー
-  useEffect(() => {
-    if (mediaType !== 'video' || !videoRef.current) return;
+    if (!videoRef.current || !isAuthenticated) return;
 
     const video = videoRef.current;
 
     const handleTimeUpdate = async () => {
-      // 動画の現在の再生時間を秒単位（整数）で取得
       const currentTimeFloor = Math.floor(video.currentTime);
 
-      // 前回の処理から動画の尺が1秒進んだか判定
       if (currentTimeFloor > videoTimestamp) {
         videoTimestamp = currentTimeFloor;
 
-        // 動画が読み込まれている場合
-        if (video.readyState >= 2) { // HAVE_CURRENT_DATA 以上
+        if (video.readyState >= 2) {
           const rawImg = await videoToImageAsync(video);
           if (!rawImg) return;
 
-          // 1. まず元フレームを mediaFrame にセットして ImageCropper を確実にレンダリングさせる
-          setMediaFrame(rawImg);
+          setCurrentFrame(rawImg);
 
-          // 2. cropperRef がある場合は切り抜き画像を、なければ元のフレーム画像を使用
           let processedImg: HTMLImageElement = rawImg;
           if (cropperRef.current) {
             const result = await cropperRef.current.getClippedImage();
             processedImg = result.croppedImage;
-            setCroppedBoundingBox(result.boundingBox);
           }
 
           const detectedGroups = await getGroups(processedImg);
@@ -193,9 +115,8 @@ const App = () => {
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate);
     };
-  }, [mediaType, mediaSrc, isAuthenticated]);
+  }, [isAuthenticated]);
 
-  // QR未認証時の表示画面
   if (!isAuthenticated) {
     return (
       <main className="flex h-screen w-screen flex-col items-center justify-center bg-gray-100 font-sans">
@@ -207,12 +128,8 @@ const App = () => {
     );
   }
 
-  // 認証完了後の画面
   return (
-    /* 元のCSS設定（透明背景、中央配置、スクロールバー非表示、フォント） */
     <main className="relative flex h-screen w-screen items-center justify-center bg-transparent overflow-hidden font-sans">
-      
-      {/* 画面右上：設定画面トグルボタン（小さめのSVGアイコン） */}
       <button
         onClick={() => setIsSettingOpen((prev) => !prev)}
         className="absolute top-4 right-4 z-50 p-2 rounded-full bg-white/80 hover:bg-white shadow transition-all"
@@ -221,27 +138,14 @@ const App = () => {
         <SettingsIcon />
       </button>
 
-      {/* 入力データ(画像) */}
-      {mediaType === 'image' && mediaSrc && (
-        <img
-          ref={imageRef}
-          src={mediaSrc}
-          alt="uploaded"
-          className="absolute top-0 left-0 w-px h-px opacity-0 pointer-events-none"
-        />
-      )}
-
-      {/* 入力データ(動画) - 人には見えないレベル(1px×1px/opacity-0)で常時レンダリング */}
       <video
         ref={videoRef}
-        src={mediaSrc || undefined}
         muted
         autoPlay
         playsInline
         className="absolute top-0 left-0 w-px h-px opacity-0 pointer-events-none"
       />
 
-      {/* メイン画面：設定が閉じられている時（中央に検出数を特大表示） */}
       {!isSettingOpen && (
         <div className="flex flex-col items-center justify-center">
           <span className="text-2xl font-bold text-gray-600 mb-2">現在の検出グループ数</span>
@@ -251,23 +155,20 @@ const App = () => {
         </div>
       )}
 
-      {/* 設定画面オーバーレイ */}
       <div
         className={`fixed inset-0 bg-white/95 z-40 flex flex-col items-center justify-center p-6 ${
           isSettingOpen ? 'block' : 'pointer-events-none opacity-0'
         }`}
       >
         <div className="flex flex-col w-2/3 h-full items-center justify-center">
-          {mediaFrame && (
+          {currentFrame && (
             <ImageCropper
               ref={cropperRef}
-              imageElement={mediaFrame}
-              onCropChange={handleCropChange}
+              imageElement={currentFrame}
               className="w-full h-1/2"
             />
           )}
           
-          {/* 設定を完了するボタン */}
           <button
             onClick={() => setIsSettingOpen(false)}
             className="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded shadow"
@@ -276,7 +177,6 @@ const App = () => {
           </button>
         </div>
       </div>
-
     </main>
   );
 }
