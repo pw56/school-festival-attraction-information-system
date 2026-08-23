@@ -1,4 +1,4 @@
-// 共通の描画・検証処理を行う内部関数
+// 描画・検証処理を行う内部関数
 function drawMediaToCanvas(media: HTMLImageElement | HTMLVideoElement): HTMLCanvasElement | null {
   let width = 0;
   let height = 0;
@@ -57,60 +57,5 @@ export function videoToImageAsync(
     
     // データURLを代入して読み込みを開始させる
     img.src = canvas.toDataURL(mime, quality);
-  });
-}
-
-export function videoToImageAsBlobAsync(
-  // `videoToImageAsync()` と同じ引数
-  video: HTMLVideoElement,
-  mime: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/png',
-  quality?: number
-): Promise<Blob | null> {
-  return new Promise((resolve) => {
-    const canvas = drawMediaToCanvas(video);
-    if (!canvas) {
-      return resolve(null);
-    }
-
-    // CanvasからBlobを生成して返す
-    canvas.toBlob(
-      (blob) => resolve(blob),
-      mime,
-      quality
-    );
-  });
-}
-
-export function imageToBlobAsync(
-  image: HTMLImageElement,
-  mime: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/png',
-  quality?: number
-): Promise<Blob | null> {
-  return new Promise((resolve) => {
-    const canvas = drawMediaToCanvas(image);
-    if (!canvas) {
-      return resolve(null);
-    }
-
-    // CanvasからBlobを生成して返す
-    canvas.toBlob(
-      (blob) => resolve(blob),
-      mime,
-      quality
-    );
-  });
-}
-
-export function canvasToBlob(
-  canvas: HTMLCanvasElement,
-  mime: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/png',
-  quality?: number
-): Promise<Blob | null> {
-  return new Promise((resolve) => {
-    canvas.toBlob(
-      (blob) => resolve(blob),
-      mime,
-      quality
-    );
   });
 }
