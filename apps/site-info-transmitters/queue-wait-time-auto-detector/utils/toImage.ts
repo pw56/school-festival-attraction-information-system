@@ -1,22 +1,15 @@
 // 描画・検証処理を行う内部関数
-function drawMediaToCanvas(media: HTMLImageElement | HTMLVideoElement): HTMLCanvasElement | null {
+function drawVideoToCanvas(video: HTMLVideoElement): HTMLCanvasElement | null {
   let width = 0;
   let height = 0;
 
-  if (media instanceof HTMLVideoElement) {
+  if (video instanceof HTMLVideoElement) {
     // ビデオ要素の場合の処理
-    if (media.videoWidth === 0 || media.videoHeight === 0) {
+    if (video.videoWidth === 0 || video.videoHeight === 0) {
       return null;
     }
-    width = media.videoWidth;
-    height = media.videoHeight;
-  } else if (media instanceof HTMLImageElement) {
-    // 画像要素の場合の処理（読み込み未完了、またはサイズが0の場合はnullを返す）
-    if (!media.complete || media.naturalWidth === 0 || media.naturalHeight === 0) {
-      return null;
-    }
-    width = media.naturalWidth;
-    height = media.naturalHeight;
+    width = video.videoWidth;
+    height = video.videoHeight;
   } else {
     // 想定外の型が渡された場合のセーフティ
     return null;
@@ -32,7 +25,7 @@ function drawMediaToCanvas(media: HTMLImageElement | HTMLVideoElement): HTMLCanv
   }
 
   // キャンバスに描画
-  ctx.drawImage(media, 0, 0, canvas.width, canvas.height);
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   
   return canvas;
 }
@@ -43,19 +36,31 @@ export function videoToImageAsync(
   quality?: number // qualityは 0.0 から 1.0 の間で指定（例: 0.8）
 ): Promise<HTMLImageElement | null> {
   return new Promise((resolve) => {
-    const canvas = drawMediaToCanvas(video);
+    const canvas = drawVideoToCanvas(video);
     if (!canvas) {
       return resolve(null);
     }
     
-    const img = new Image();
-    
-    // 画像の読み込みが完了したらresolveする
-    img.onload = () => resolve(img);
-    // 読み込みエラー時のハンドリング
-    img.onerror = () => resolve(null);
-    
-    // データURLを代入して読み込みを開始させる
-    img.src = canvas.toDataURL(mime, quality);
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        return resolve(null);
+      }
+
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      
+      // 画像の読み込みが完了したらresolveする
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve(img);
+      };
+      // 読み込みエラー時のハンドリング
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(null);
+      };
+      
+      img.src = url;
+    }, mime, quality);
   });
 }
