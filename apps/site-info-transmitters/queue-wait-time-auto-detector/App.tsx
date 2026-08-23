@@ -4,9 +4,9 @@ import { getGroups, Groups } from './getGroups';
 import { videoToImageAsync } from './utils/toImage';
 import { ImageCropper, ImageCropperRef } from './ImageCropper';
 import QrScanner from 'qr-scanner';
-import { isValidSecretUuid } from './services/isValidSecretUuid';
+import { isValidSecretUuid } from '../../utils/services/isValidSecretUuid';
 import { getEventName } from './utils/getEventName';
-import SettingsIcon from './Settings.svg?react';
+import SettingsIcon from './assets/Settings.svg?react';
 
 let videoTimestamp: number = -1;
 
