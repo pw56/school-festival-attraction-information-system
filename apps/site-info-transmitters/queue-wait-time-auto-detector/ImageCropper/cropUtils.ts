@@ -108,9 +108,26 @@ export const cropImage = (
     };
 
     // 3. 高解像度の HTMLImageElement を生成して返却
-    const clippedImage = new Image();
-    clippedImage.onload = () => resolve({ croppedImage: clippedImage, boundingBox }); // CropResult オブジェクトを返却
-    clippedImage.onerror = () => reject(new Error('HTMLImageElementの生成に失敗しました。'));
-    clippedImage.src = trimmedCanvas.toDataURL('image/png');
+    trimmedCanvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error('Blobの生成に失敗しました。'));
+        return;
+      }
+      const objectUrl = URL.createObjectURL(blob);
+      const clippedImage = new Image();
+
+      // srcを代入する「前」にイベントリスナーを登録する
+      clippedImage.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve({ croppedImage: clippedImage, boundingBox }); // CropResult オブジェクトを返却
+      };
+
+      clippedImage.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error('HTMLImageElementの生成に失敗しました。'));
+      };
+
+      clippedImage.src = objectUrl;
+    }, 'image/png');
   });
 };
