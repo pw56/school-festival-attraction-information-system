@@ -209,9 +209,9 @@ const App = () => {
               onChange={(e) => setSelectedDeviceId(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800"
             >
-              {cameras.map((camera, index) => (
+              {cameras.map((camera) => (
                 <option key={camera.deviceId} value={camera.deviceId}>
-                  {camera.label || `カメラ ${index + 1}`}
+                  {camera.label}
                 </option>
               ))}
             </select>
