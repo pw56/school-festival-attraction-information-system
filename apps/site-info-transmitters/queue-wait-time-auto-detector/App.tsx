@@ -106,6 +106,7 @@ const App = () => {
           }
 
           const detectedGroups = await getGroups(processedImg);
+          processedImg.src = ''; // 不要になった、内部バッファとBlobの紐付けを完全に切る
           setGroups(detectedGroups);
         }
       }
