@@ -24,6 +24,7 @@ const App = () => {
   // カメラデバイス管理用の状態
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
+  const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
 
   // 利用可能なカメラ一覧を取得し、デフォルトで内カメラを選択
   useEffect(() => {
@@ -49,6 +50,8 @@ const App = () => {
         }
       } catch (err) {
         console.error('カメラ一覧の取得に失敗しました', err);
+      } finally {
+        setIsCameraReady(true);
       }
     };
 
@@ -57,7 +60,7 @@ const App = () => {
 
   // 1. QRスキャナー起動とスキャン処理
   useEffect(() => {
-    if (isAuthenticated || !qrVideoRef.current) return;
+    if (!isCameraReady || isAuthenticated || !qrVideoRef.current) return;
 
     let isProcessing = false;
     const scanner = new QrScanner(
@@ -91,7 +94,7 @@ const App = () => {
     return () => {
       scanner.destroy();
     };
-  }, [isAuthenticated, selectedDeviceId]);
+  }, [isCameraReady, isAuthenticated, selectedDeviceId]);
 
   // 2. 認証成功後にWebカメラのストリーミングを開始
   useEffect(() => {
