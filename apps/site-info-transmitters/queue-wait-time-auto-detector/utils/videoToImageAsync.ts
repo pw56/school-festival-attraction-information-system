@@ -23,7 +23,7 @@ export function videoToImageAsync(
   video: HTMLVideoElement,
   mime: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/png',
   quality?: number // qualityは 0.0 から 1.0 の間で指定（例: 0.8）
-): Promise<HTMLImageElement | null> {
+): Promise<HTMLImageElement | null> { // 画像の読み込みが完了してから返すため、非同期は必要
   return new Promise((resolve) => {
     drawVideoToCanvas(video);
     
@@ -32,19 +32,26 @@ export function videoToImageAsync(
       return resolve(null);
     }
 
-    // メモリリーク（BlobURLの解放漏れ）を防ぐため、toBlob ではなく toDataURL を使用
-    const dataUrl = canvas.toDataURL(mime, quality);
-    const img = new Image();
-    
-    // 【重要】srcを代入する「前」にイベントリスナーを登録する
-    img.onload = () => {
-      resolve(img);
-    };
-    
-    img.onerror = () => {
-      resolve(null);
-    };
-    
-    img.src = dataUrl;
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        return resolve(null);
+      }
+
+      const objectUrl = URL.createObjectURL(blob);
+      const img = new Image();
+      
+      // srcを代入する「前」にイベントリスナーを登録する
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(img);
+      };
+      
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(null);
+      };
+      
+      img.src = objectUrl;
+    }, mime, quality);
   });
 }
