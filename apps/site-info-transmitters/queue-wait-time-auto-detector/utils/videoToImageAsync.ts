@@ -9,7 +9,7 @@ function drawVideoToCanvas(video: HTMLVideoElement): void {
 
   /* 
   毎回サイズ変更が走るとブラウザ側で内部メモリの再確保が起きるため、
-  サイズが変わったときだけ変更するようにするとさらに効率的
+  サイズが変わったときだけ変更するようにする
   */
   if (canvas.width !== width) canvas.width = width;
   if (canvas.height !== height) canvas.height = height;

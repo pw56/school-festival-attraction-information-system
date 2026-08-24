@@ -1,5 +1,12 @@
 import { ImageLayout, CropResult, CroppedBoundingBox } from './types';
 
+// 長時間稼働時のOOM対策でキャンバス使い回し
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d');
+
+const trimmedCanvas = document.createElement('canvas');
+const trimmedCtx = trimmedCanvas.getContext('2d');
+
 /**
  * 手書きパスに基づいて画像を切り抜くユーティリティ関数
  */
@@ -17,11 +24,12 @@ export const cropImage = (
     const origWidth = imageElement.naturalWidth;
     const origHeight = imageElement.naturalHeight;
 
-    // メモリ内にピュアCanvasを生成
-    const canvas = document.createElement('canvas');
-    canvas.width = origWidth;
-    canvas.height = origHeight;
-    const ctx = canvas.getContext('2d');
+    /* 
+    毎回サイズ変更が走るとブラウザ側で内部メモリの再確保が起きるため、
+    サイズが変わったときだけ変更するようにする
+    */
+    if (canvas.width !== origWidth) canvas.width = origWidth;
+    if (canvas.height !== origHeight) canvas.height = origHeight;
 
     if (!ctx) {
       reject(new Error('Canvasコンテキストの取得に失敗しました。'));
@@ -83,11 +91,9 @@ export const cropImage = (
     const cropWidth = maxX - minX + 1;
     const cropHeight = maxY - minY + 1;
 
-    // 変更: バウンディングボックス領域のみを切り出す別Canvasを作成
-    const trimmedCanvas = document.createElement('canvas');
-    trimmedCanvas.width = cropWidth;
-    trimmedCanvas.height = cropHeight;
-    const trimmedCtx = trimmedCanvas.getContext('2d');
+    // バウンディングボックス領域のみを切り出す別Canvasを作成
+    if (trimmedCanvas.width !== cropWidth) trimmedCanvas.width = cropWidth;
+    if (trimmedCanvas.height !== cropHeight) trimmedCanvas.height = cropHeight;
 
     if (!trimmedCtx) {
       reject(new Error('トリミング用Canvasコンテキストの取得に失敗しました。'));
