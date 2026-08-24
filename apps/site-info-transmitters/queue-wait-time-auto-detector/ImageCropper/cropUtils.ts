@@ -1,5 +1,12 @@
 import { ImageLayout, CropResult, CroppedBoundingBox } from './types';
 
+// 長時間稼働時のOOM対策でキャンバス使い回し
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d');
+
+const trimmedCanvas = document.createElement('canvas');
+const trimmedCtx = trimmedCanvas.getContext('2d');
+
 /**
  * 手書きパスに基づいて画像を切り抜くユーティリティ関数
  */
@@ -17,16 +24,21 @@ export const cropImage = (
     const origWidth = imageElement.naturalWidth;
     const origHeight = imageElement.naturalHeight;
 
-    // メモリ内にピュアCanvasを生成
-    const canvas = document.createElement('canvas');
-    canvas.width = origWidth;
-    canvas.height = origHeight;
-    const ctx = canvas.getContext('2d');
+    /* 
+    毎回サイズ変更が走るとブラウザ側で内部メモリの再確保が起きるため、
+    サイズが変わったときだけ変更するようにする
+    */
+    if (canvas.width !== origWidth) canvas.width = origWidth;
+    if (canvas.height !== origHeight) canvas.height = origHeight;
 
     if (!ctx) {
       reject(new Error('Canvasコンテキストの取得に失敗しました。'));
       return;
     }
+
+    // 以前の描画内容およびクリッピング状態をクリア
+    ctx.save();
+    ctx.clearRect(0, 0, origWidth, origHeight);
 
     // 画面表示サイズから元画像の解像度へのスケール比率 (アスペクト比を維持した画像サイズを基準に計算)
     const scaleX = origWidth / imageLayout.width;
@@ -50,6 +62,9 @@ export const cropImage = (
 
     // 2. マスク内に等倍解像度で画像を描画
     ctx.drawImage(imageElement, 0, 0, origWidth, origHeight);
+
+    // 描画状態（クリッピングパス等）を元に戻す
+    ctx.restore();
 
     // 透明でないピクセル（アルファ値 > 0）のバウンディングボックスを計算
     const imageData = ctx.getImageData(0, 0, origWidth, origHeight);
@@ -83,16 +98,16 @@ export const cropImage = (
     const cropWidth = maxX - minX + 1;
     const cropHeight = maxY - minY + 1;
 
-    // 変更: バウンディングボックス領域のみを切り出す別Canvasを作成
-    const trimmedCanvas = document.createElement('canvas');
-    trimmedCanvas.width = cropWidth;
-    trimmedCanvas.height = cropHeight;
-    const trimmedCtx = trimmedCanvas.getContext('2d');
+    // バウンディングボックス領域のみを切り出す別Canvasを作成
+    if (trimmedCanvas.width !== cropWidth) trimmedCanvas.width = cropWidth;
+    if (trimmedCanvas.height !== cropHeight) trimmedCanvas.height = cropHeight;
 
     if (!trimmedCtx) {
       reject(new Error('トリミング用Canvasコンテキストの取得に失敗しました。'));
       return;
     }
+
+    trimmedCtx.clearRect(0, 0, cropWidth, cropHeight);
 
     trimmedCtx.drawImage(
       canvas,
@@ -108,9 +123,26 @@ export const cropImage = (
     };
 
     // 3. 高解像度の HTMLImageElement を生成して返却
-    const clippedImage = new Image();
-    clippedImage.onload = () => resolve({ croppedImage: clippedImage, boundingBox }); // CropResult オブジェクトを返却
-    clippedImage.onerror = () => reject(new Error('HTMLImageElementの生成に失敗しました。'));
-    clippedImage.src = trimmedCanvas.toDataURL('image/png');
+    trimmedCanvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error('Blobの生成に失敗しました。'));
+        return;
+      }
+      const objectUrl = URL.createObjectURL(blob);
+      const clippedImage = new Image();
+
+      // srcを代入する「前」にイベントリスナーを登録する
+      clippedImage.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve({ croppedImage: clippedImage, boundingBox }); // CropResult オブジェクトを返却
+      };
+
+      clippedImage.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error('HTMLImageElementの生成に失敗しました。'));
+      };
+
+      clippedImage.src = objectUrl;
+    }, 'image/png');
   });
 };

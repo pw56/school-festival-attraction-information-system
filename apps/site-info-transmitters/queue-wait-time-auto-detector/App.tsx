@@ -1,188 +1,195 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './global.css';
 import { getGroups, Groups } from './getGroups';
-import { ResultView } from './components/ResultView';
-import { imageToBlobAsync, videoToImageAsync, canvasToBlob } from './utils/toImage';
-import {
-  addInputMediaFile,
-  addExtractedFrameAsPng,
-  addAnnotatedImageAsPng,
-  addObjectAsJson,
-  downloadZip
-} from './utils/exportExperimentData';
-import { ImageCropper, ImageCropperRef, CropResult, CroppedBoundingBox } from './ImageCropper';
+import { videoToImageAsync } from './utils/videoToImageAsync';
+import { ImageCropper, ImageCropperRef } from './ImageCropper';
+import QrScanner from 'qr-scanner';
+import { isValidSecretUuid } from '../../utils/services/isValidSecretUuid';
+import { getEventName } from './utils/getEventName';
+import SettingsIcon from './assets/Settings.svg?react';
 
-// 動画用のグローバルなタイムスタンプ
-// 動画のEffect内の変数だとバウンディングボックスの方で使えないのでグローバル
 let videoTimestamp: number = -1;
-const imageTimestamp: number = 0; // 画像のタイムスタンプは固定
 
 const App = () => {
-  // アップロードされたメディアの管理用
-  const [mediaSrc, setMediaSrc] = useState<string | null>(null);
-  const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null);
-  
-  // ループ処理で参照するためのRef
-  const imageRef = useRef<HTMLImageElement | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isSettingOpen, setIsSettingOpen] = useState<boolean>(false);
+
+  const qrVideoRef = useRef<HTMLVideoElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const cropperRef = useRef<ImageCropperRef | null>(null);
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+  const isWakeLockRequestedRef = useRef<boolean>(false);
   
-  // Canvas生成完了を通知するコールバック
-  const resolveCanvasRef = useRef<(() => void) | null>(null);
-  
-  // 合成結果表示用
-  const [mediaFrame, setMediaFrame] = useState<HTMLImageElement | null>(null);
+  const [currentFrame, setCurrentFrame] = useState<HTMLImageElement | null>(null);
   const [groups, setGroups] = useState<Groups>([]);
-  const [croppedBoundingBox, setCroppedBoundingBox] = useState<CroppedBoundingBox | undefined>(undefined);
 
-  // ダウンロードボタン制御用
-  const [isDownloading, setIsDownloading] = useState<boolean>(false);
-  
-  // ファイル選択時のハンドラ
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // カメラデバイス管理用の状態
+  const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
+  const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
 
-    // 動画の長さチェック(ガード節)
-    if (file.type.startsWith('video/')) {
-      const isTooLong = await new Promise<boolean>((resolve) => {
-        const videoElement = document.createElement('video');
-        videoElement.preload = 'metadata';
-        videoElement.src = URL.createObjectURL(file);
-        
-        videoElement.onloadedmetadata = () => {
-          URL.revokeObjectURL(videoElement.src); // 一時URLの即時解放
-          resolve(videoElement.duration > 999);
-        };
+  // 利用可能なカメラ一覧を取得し、デフォルトで内カメラを選択
+  useEffect(() => {
+    const fetchCameras = async () => {
+      try {
+        // カメラ権限を取得してラベル名を開示させる
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        // 取得した一時ストリームのトラックを停止
+        stream.getTracks().forEach((track) => track.stop());
 
-        // エラーハンドリング（破損ファイルなど）
-        videoElement.onerror = () => {
-          URL.revokeObjectURL(videoElement.src);
-          resolve(true); // 安全のためエラー時も弾く
-        };
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter((device) => device.kind === 'videoinput');
+        setCameras(videoDevices);
+
+        if (videoDevices.length > 0) {
+          // 内カメラ（フロントカメラ）を優先的に検索
+          const frontCamera = videoDevices.find((device) =>
+            device.label.toLowerCase().includes('front') ||
+            device.label.toLowerCase().includes('user') ||
+            device.label.includes('内')
+          );
+          setSelectedDeviceId(frontCamera ? frontCamera.deviceId : videoDevices[0].deviceId);
+        }
+      } catch (err) {
+        console.error('カメラ一覧の取得に失敗しました', err);
+      } finally {
+        setIsCameraReady(true);
+      }
+    };
+
+    fetchCameras();
+  }, []);
+
+  // Screen Wake Lockの取得処理
+  const requestWakeLock = async () => {
+    if ('wakeLock' in navigator) {
+      try {
+        wakeLockRef.current = await navigator.wakeLock.request('screen');
+      } catch (err) {
+        console.error('Wake Lockの取得に失敗しました:', err);
+      }
+    }
+  };
+
+  // visibilitychange イベントハンドラーの設定
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible' && isWakeLockRequestedRef.current) {
+        await requestWakeLock();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (wakeLockRef.current) {
+        wakeLockRef.current.release().catch(() => {});
+      }
+    };
+  }, []);
+
+  // 設定完了ボタン押下時の処理
+  const handleCompleteSettings = async () => {
+    setIsSettingOpen(false);
+    isWakeLockRequestedRef.current = true;
+    await requestWakeLock();
+  };
+
+  // 1. QRスキャナー起動とスキャン処理
+  useEffect(() => {
+    if (!isCameraReady || isAuthenticated || !qrVideoRef.current) return;
+
+    let isProcessing = false;
+    const scanner = new QrScanner(
+      qrVideoRef.current,
+      async (result) => {
+        if (isProcessing) return;
+        isProcessing = true;
+        scanner.stop();
+
+        const uuid = result.data;
+        const isValid = await isValidSecretUuid(uuid);
+
+        if (isValid) {
+          const eventName = await getEventName(uuid);
+          window.alert(`認証に成功しました！\n出し物名: ${eventName}`);
+          setIsAuthenticated(true);
+        } else {
+          window.alert('認証に失敗しました。無効なQRコードです。');
+          isProcessing = false;
+          scanner.start();
+        }
+      },
+      {
+        returnDetailedScanResult: true,
+        preferredCamera: selectedDeviceId ? selectedDeviceId : 'user',
+      }
+    );
+
+    scanner.start();
+
+    return () => {
+      scanner.destroy();
+    };
+  }, [isCameraReady, isAuthenticated, selectedDeviceId]);
+
+  // 2. 認証成功後にWebカメラのストリーミングを開始
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    let stream: MediaStream | null = null;
+    const videoConstraints: MediaTrackConstraints = selectedDeviceId
+      ? { deviceId: { exact: selectedDeviceId } }
+      : { facingMode: 'user' };
+
+    navigator.mediaDevices
+      .getUserMedia({ video: videoConstraints, audio: false })
+      .then((s) => {
+        stream = s;
+        if (videoRef.current) {
+          videoRef.current.srcObject = s;
+          videoRef.current.play().catch(() => {});
+        }
+      })
+      .catch((err) => {
+        console.error('カメラの起動に失敗しました', err);
       });
 
-      if (isTooLong) {
-        alert('999秒を超える動画はアップロードできません。');
-        e.target.value = ''; // 選択されたファイルをリセット
-        return; // 処理を中断
-      }
-    }
-    
-    const url = URL.createObjectURL(file);
-    setMediaSrc(url);
-
-    // ここで実験結果として入力された画像・動画をZipに投げる
-    addInputMediaFile(file);
-
-    if (file.type.startsWith('image/')) {
-      setMediaType('image');
-    } else if (file.type.startsWith('video/')) {
-      setMediaType('video');
-    } else {
-      setMediaType(null);
-    }
-  };
-
-  // 切り取り範囲が更新・決定された時のハンドラ
-  const handleCropChange = async (cropResult: CropResult) => {
-    if (mediaType === 'image') {
-      if (imageRef.current) {
-        const rawImg = new Image();
-        rawImg.src = imageRef.current.src;
-        await rawImg.decode().catch(() => {});
-        setMediaFrame(rawImg);
-      }
-
-      // 切り取り後のバウンディングボックスを State にセット
-      setCroppedBoundingBox(cropResult.boundingBox);
-
-      const timestamp = imageTimestamp;
-      const detectedGroups = await getGroups(cropResult.croppedImage);
-      
-      addExtractedFrameAsPng(await imageToBlobAsync(cropResult.croppedImage, 'image/png') as Blob, timestamp);
-      setGroups(detectedGroups);
-      addObjectAsJson(detectedGroups, timestamp);
-    }
-  };
-
-  // メモリリーク対策：アンマウント時にオブジェクトURLを解放
-  useEffect(() => {
     return () => {
-      if (mediaSrc) URL.revokeObjectURL(mediaSrc);
-    };
-  }, [mediaSrc]);
-
-  // 画像用の1回限りの処理
-  useEffect(() => {
-    if (mediaType === 'image' && imageRef.current) {
-      const processImage = async () => {
-        const rawElement = imageRef.current!;
-
-        // 1. まず元画像を mediaFrame に渡して ImageCropper をレンダリングさせる
-        const rawImg = new Image();
-        rawImg.src = rawElement.src;
-        await rawImg.decode().catch(() => {});
-        setMediaFrame(rawImg);
-
-        // 2. レンダリング後に cropperRef が利用可能になるため、クロップ画像を取得（取得できなければ元画像）
-        let inputElement: HTMLImageElement = rawElement;
-        if (cropperRef.current) {
-          const result = await cropperRef.current.getClippedImage();
-          inputElement = result.croppedImage;
-          setCroppedBoundingBox(result.boundingBox);
-        }
-
-        const detectedGroups = await getGroups(inputElement);
-        
-        addExtractedFrameAsPng(await imageToBlobAsync(inputElement, 'image/png') as Blob, imageTimestamp);
-        setGroups(detectedGroups);
-        addObjectAsJson(detectedGroups, imageTimestamp);
-      };
-      
-      // 画像の読み込み完了を待って処理、または既に読み込み済みの場合は即時実行
-      if (imageRef.current.complete) {
-        processImage();
-      } else {
-        imageRef.current.onload = processImage;
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
       }
-    }
-  }, [mediaType, mediaSrc]);
+    };
+  }, [isAuthenticated, selectedDeviceId]);
 
-  // 1秒ごとにメディアからデータを取得してグループ数検出メソッドに流すタイマー
+  // 3. 1秒ごとにカメラ映像を取得してグループ数検出を実行
   useEffect(() => {
-    if (mediaType !== 'video' || !videoRef.current) return;
+    if (!videoRef.current || !isAuthenticated) return;
 
     const video = videoRef.current;
 
     const handleTimeUpdate = async () => {
-      // 動画の現在の再生時間を秒単位（整数）で取得
       const currentTimeFloor = Math.floor(video.currentTime);
 
-      // 前回の処理から動画の尺が1秒進んだか判定
       if (currentTimeFloor > videoTimestamp) {
         videoTimestamp = currentTimeFloor;
 
-        // 動画が読み込まれている場合
-        if (video.readyState >= 2) { // HAVE_CURRENT_DATA 以上
-          const rawImg = await videoToImageAsync(video); // 実験結果出力に含める
+        if (video.readyState >= 2) {
+          const rawImg = await videoToImageAsync(video);
           if (!rawImg) return;
 
-          // 1. まず元フレームを mediaFrame にセットして ImageCropper を確実にレンダリングさせる
-          setMediaFrame(rawImg);
+          setCurrentFrame(rawImg);
 
-          // 2. cropperRef がある場合は切り抜き画像を、なければ元のフレーム画像を使用
           let processedImg: HTMLImageElement = rawImg;
           if (cropperRef.current) {
             const result = await cropperRef.current.getClippedImage();
             processedImg = result.croppedImage;
-            setCroppedBoundingBox(result.boundingBox);
           }
 
           const detectedGroups = await getGroups(processedImg);
-          addExtractedFrameAsPng(await imageToBlobAsync(processedImg, 'image/png') as Blob, videoTimestamp);
+          processedImg.src = ''; // 不要になった、内部バッファとBlobの紐付けを完全に切る
           setGroups(detectedGroups);
-          addObjectAsJson(detectedGroups, videoTimestamp);
         }
       }
     };
@@ -191,120 +198,87 @@ const App = () => {
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate);
     };
-  }, [mediaType, mediaSrc]);
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return (
+      <main className="flex h-screen w-screen flex-col items-center justify-center bg-gray-100 font-sans">
+        <h1 className="mb-4 text-xl font-bold text-gray-800">QRコードをスキャンしてください</h1>
+        <div className="relative h-64 w-64 overflow-hidden rounded-lg border-2 border-gray-400 bg-black shadow-md">
+          <video ref={qrVideoRef} className="h-full w-full object-cover" />
+        </div>
+      </main>
+    );
+  }
 
   return (
-    /* 元のCSS設定（透明背景、中央配置、スクロールバー非表示、フォント） */
-    <main className="flex h-screen w-screen items-center justify-center bg-transparent overflow-hidden font-sans">
-      
-      {/* ファイル入力 */}
-      {!mediaSrc && (
-        <>
-          <input 
-            id="file-upload"
-            type="file" 
-            accept="image/*,video/*" 
-            onChange={handleFileChange}
-            className="hidden"
-          />
-          <label 
-            htmlFor="file-upload" 
-            className="absolute inset-0 m-auto h-fit w-fit cursor-pointer select-none border border-gray-400 bg-white px-4 py-2 rounded shadow hover:bg-gray-50 text-gray-700"
-          >
-            ファイルを選択
-          </label>
-        </>
+    <main className="relative flex h-screen w-screen items-center justify-center bg-transparent overflow-hidden font-sans">
+      <button
+        onClick={() => setIsSettingOpen((prev) => !prev)}
+        className="absolute top-4 right-4 z-50 p-2 rounded-full bg-white/80 hover:bg-white shadow transition-all"
+        title="設定"
+      >
+        <SettingsIcon />
+      </button>
+
+      <video
+        ref={videoRef}
+        muted
+        autoPlay
+        playsInline
+        className="absolute top-0 left-0 w-px h-px opacity-0 pointer-events-none"
+      />
+
+      {!isSettingOpen && (
+        <div className="flex flex-col items-center justify-center">
+          <span className="text-2xl font-bold text-gray-600 mb-2">現在の検出グループ数</span>
+          <span className="text-9xl font-extrabold text-blue-600 tracking-wider">
+            {groups.length}
+          </span>
+        </div>
       )}
 
-      {mediaSrc && (
-        <>
-
-          {/* 入力データ(画像) */}
-          {mediaType === 'image' && (
-            <img
-              ref={imageRef}
-              src={mediaSrc}
-              alt="uploaded"
-              className="absolute top-0 left-0 opacity-1 pointer-events-none"
-            />
-          )}
-
-          {/* 入力データ(動画) */}
-          {mediaType === 'video' && (
-            <video
-              ref={videoRef}
-              src={mediaSrc}
-              muted
-              autoPlay
-              playsInline
-              className="absolute top-0 left-0 opacity-1 pointer-events-none"
-            />
-          )}
-
-          <div className="flex flex-col w-2/3 h-full">
-            {mediaFrame && (
-              <ImageCropper
-                ref={cropperRef}
-                imageElement={mediaFrame}
-                onCropChange={handleCropChange}
-                className="w-full h-1/2"
-              />
-            )}
-            {/* 合成表示用のCanvasコンポーネント（DRY原則に基づき共通化） */}
-            <ResultView 
-              mediaSource={mediaFrame} 
-              groups={groups}
-              croppedBoundingBox={croppedBoundingBox}
-              onCanvasGenerated={(canvas) => {
-                (async () => {
-                  await addAnnotatedImageAsPng(
-                    await canvasToBlob(canvas, 'image/png') as Blob,
-                    mediaType === 'image' ? imageTimestamp : videoTimestamp
-                  );
-                  // 画像のプッシュ完了をダウンロード処理に通知
-                  if (resolveCanvasRef.current) {
-                    resolveCanvasRef.current();
-                    resolveCanvasRef.current = null;
-                  }
-                })();
-              }}
-              className="w-full h-1/2 object-contain"
-            />
-          </div>
-          
-          {/* flex-col を追加して中の要素を強制的に改行 */}
-          {/* navの横幅を画面の半分にし、境界が中央にくるように調整 */}
-          <nav className="flex flex-col w-1/3 items-center justify-center">
-            
-            {/* グループ数表示 */}
-            <span>検出されたグループ数: {groups.length}</span>
-
-            {/* 実験結果のダウンロード */}
-            <button
-              disabled={isDownloading}
-              onClick={async () => {
-                setIsDownloading(true);
-                try {
-                  // 最新フレームの描画完了（非同期）を待機するPromiseを作成
-                  await new Promise<void>((resolve) => {
-                    resolveCanvasRef.current = resolve;
-                    // 万が一Canvasが再描画されない場合の安全対策（1秒でタイムアウトしてDLを実行）
-                    setTimeout(resolve, 1000);
-                  });
-                  await downloadZip('experimental_results.zip');
-                } finally {
-                  setIsDownloading(false);
-                }
-              }}
-              className="bg-blue-500 hover:bg-blue-700 active:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      <div
+        className={`fixed inset-0 bg-white/95 z-40 flex flex-col items-center justify-center p-6 ${
+          isSettingOpen ? 'block' : 'pointer-events-none opacity-0'
+        }`}
+      >
+        <div className="flex flex-col w-2/3 h-full items-center justify-center">
+          {/* カメラ選択プルダウン */}
+          <div className="mb-4 w-full max-w-md">
+            <label htmlFor="camera-select" className="block text-sm font-medium text-gray-700 mb-1">
+              使用するカメラを選択
+            </label>
+            <select
+              id="camera-select"
+              value={selectedDeviceId}
+              onChange={(e) => setSelectedDeviceId(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800"
             >
-              {isDownloading ? 'ダウンロード中...' : '実験結果をダウンロード'}
-            </button>
+              {cameras.map((camera, index) => (
+                <option key={camera.deviceId} value={camera.deviceId}>
+                  {camera.label || `カメラ ${index + 1}`}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          </nav>
-
-        </>
-      )}
+          {currentFrame && (
+            <ImageCropper
+              ref={cropperRef}
+              imageElement={currentFrame}
+              className="w-full h-1/2"
+            />
+          )}
+          
+          <button
+            onClick={handleCompleteSettings}
+            className="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded shadow"
+          >
+            設定を完了する
+          </button>
+        </div>
+      </div>
     </main>
   );
 }

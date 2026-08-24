@@ -4,10 +4,10 @@ import Konva from 'konva';
 import { ImageCropperProps, ImageCropperRef, ImageLayout, CropResult } from './types';
 import { cropImage } from './cropUtils';
 
-export type { ImageCropperProps, ImageCropperRef, CropResult, CroppedBoundingBox } from './types';
+export type { ImageCropperRef } from './types';
 
 export const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
-  ({ imageElement, className, onCropChange }, ref) => {
+  ({ imageElement, className }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const lineRef = useRef<Konva.Line>(null); // パフォーマンス対策：Lineノードを直接参照
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -122,16 +122,6 @@ export const ImageCropper = forwardRef<ImageCropperRef, ImageCropperProps>(
       if (lineRef.current) {
         lineRef.current.points(currentPoints);
         lineRef.current.getLayer()?.batchDraw();
-      }
-
-      if (onCropChange) {
-        try {
-          // cropImage から返される CropResult をそのまま渡す
-          const cropResult = await cropImage(imageElement, currentPoints, imageLayout);
-          onCropChange(cropResult);
-        } catch (error) {
-          console.error(error);
-        }
       }
     };
 
