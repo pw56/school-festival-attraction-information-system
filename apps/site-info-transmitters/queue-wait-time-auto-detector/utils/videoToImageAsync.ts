@@ -21,7 +21,7 @@ function drawVideoToCanvas(video: HTMLVideoElement): void {
 
 export function videoToImageAsync(
   video: HTMLVideoElement,
-  mime: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/png',
+  mime: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/jpeg',
   quality?: number // qualityは 0.0 から 1.0 の間で指定（例: 0.8）
 ): Promise<HTMLImageElement | null> { // 画像の読み込みが完了してから返すため、非同期は必要
   return new Promise((resolve) => {
