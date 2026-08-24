@@ -36,6 +36,10 @@ export const cropImage = (
       return;
     }
 
+    // 以前の描画内容およびクリッピング状態をクリア
+    ctx.save();
+    ctx.clearRect(0, 0, origWidth, origHeight);
+
     // 画面表示サイズから元画像の解像度へのスケール比率 (アスペクト比を維持した画像サイズを基準に計算)
     const scaleX = origWidth / imageLayout.width;
     const scaleY = origHeight / imageLayout.height;
@@ -58,6 +62,9 @@ export const cropImage = (
 
     // 2. マスク内に等倍解像度で画像を描画
     ctx.drawImage(imageElement, 0, 0, origWidth, origHeight);
+
+    // 描画状態（クリッピングパス等）を元に戻す
+    ctx.restore();
 
     // 透明でないピクセル（アルファ値 > 0）のバウンディングボックスを計算
     const imageData = ctx.getImageData(0, 0, origWidth, origHeight);
@@ -99,6 +106,8 @@ export const cropImage = (
       reject(new Error('トリミング用Canvasコンテキストの取得に失敗しました。'));
       return;
     }
+
+    trimmedCtx.clearRect(0, 0, cropWidth, cropHeight);
 
     trimmedCtx.drawImage(
       canvas,

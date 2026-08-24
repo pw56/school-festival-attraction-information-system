@@ -43,11 +43,14 @@ export function videoToImageAsync(
       // srcを代入する「前」にイベントリスナーを登録する
       img.onload = () => {
         URL.revokeObjectURL(objectUrl);
+        // Canvasの描画バッファをクリアしてグラフィックメモリを解放
+        ctx!.clearRect(0, 0, canvas.width, canvas.height);
         resolve(img);
       };
       
       img.onerror = () => {
         URL.revokeObjectURL(objectUrl);
+        ctx!.clearRect(0, 0, canvas.width, canvas.height);
         resolve(null);
       };
       
