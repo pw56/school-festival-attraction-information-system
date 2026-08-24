@@ -17,6 +17,8 @@ const App = () => {
   const qrVideoRef = useRef<HTMLVideoElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const cropperRef = useRef<ImageCropperRef | null>(null);
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+  const isWakeLockRequestedRef = useRef<boolean>(false);
   
   const [currentFrame, setCurrentFrame] = useState<HTMLImageElement | null>(null);
   const [groups, setGroups] = useState<Groups>([]);
@@ -57,6 +59,42 @@ const App = () => {
 
     fetchCameras();
   }, []);
+
+  // Screen Wake Lockの取得処理
+  const requestWakeLock = async () => {
+    if ('wakeLock' in navigator) {
+      try {
+        wakeLockRef.current = await navigator.wakeLock.request('screen');
+      } catch (err) {
+        console.error('Wake Lockの取得に失敗しました:', err);
+      }
+    }
+  };
+
+  // visibilitychange イベントハンドラーの設定
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible' && isWakeLockRequestedRef.current) {
+        await requestWakeLock();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (wakeLockRef.current) {
+        wakeLockRef.current.release().catch(() => {});
+      }
+    };
+  }, []);
+
+  // 設定完了ボタン押下時の処理
+  const handleCompleteSettings = async () => {
+    setIsSettingOpen(false);
+    isWakeLockRequestedRef.current = true;
+    await requestWakeLock();
+  };
 
   // 1. QRスキャナー起動とスキャン処理
   useEffect(() => {
@@ -234,7 +272,7 @@ const App = () => {
           )}
           
           <button
-            onClick={() => setIsSettingOpen(false)}
+            onClick={handleCompleteSettings}
             className="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded shadow"
           >
             設定を完了する
