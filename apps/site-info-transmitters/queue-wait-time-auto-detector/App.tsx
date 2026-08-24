@@ -29,6 +29,11 @@ const App = () => {
   useEffect(() => {
     const fetchCameras = async () => {
       try {
+        // カメラ権限を取得してラベル名を開示させる
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        // 取得した一時ストリームのトラックを停止
+        stream.getTracks().forEach((track) => track.stop());
+
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter((device) => device.kind === 'videoinput');
         setCameras(videoDevices);
