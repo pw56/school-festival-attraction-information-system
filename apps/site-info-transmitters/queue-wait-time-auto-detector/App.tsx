@@ -21,6 +21,35 @@ const App = () => {
   const [currentFrame, setCurrentFrame] = useState<HTMLImageElement | null>(null);
   const [groups, setGroups] = useState<Groups>([]);
 
+  // カメラデバイス管理用の状態
+  const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
+
+  // 利用可能なカメラ一覧を取得し、デフォルトで内カメラを選択
+  useEffect(() => {
+    const fetchCameras = async () => {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter((device) => device.kind === 'videoinput');
+        setCameras(videoDevices);
+
+        if (videoDevices.length > 0) {
+          // 内カメラ（フロントカメラ）を優先的に検索
+          const frontCamera = videoDevices.find((device) =>
+            device.label.toLowerCase().includes('front') ||
+            device.label.toLowerCase().includes('user') ||
+            device.label.includes('内')
+          );
+          setSelectedDeviceId(frontCamera ? frontCamera.deviceId : videoDevices[0].deviceId);
+        }
+      } catch (err) {
+        console.error('カメラ一覧の取得に失敗しました', err);
+      }
+    };
+
+    fetchCameras();
+  }, []);
+
   // 1. QRスキャナー起動とスキャン処理
   useEffect(() => {
     if (isAuthenticated || !qrVideoRef.current) return;
@@ -46,7 +75,10 @@ const App = () => {
           scanner.start();
         }
       },
-      { returnDetailedScanResult: true }
+      {
+        returnDetailedScanResult: true,
+        preferredCamera: selectedDeviceId ? selectedDeviceId : 'user',
+      }
     );
 
     scanner.start();
@@ -54,15 +86,19 @@ const App = () => {
     return () => {
       scanner.destroy();
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, selectedDeviceId]);
 
   // 2. 認証成功後にWebカメラのストリーミングを開始
   useEffect(() => {
     if (!isAuthenticated) return;
 
     let stream: MediaStream | null = null;
+    const videoConstraints: MediaTrackConstraints = selectedDeviceId
+      ? { deviceId: { exact: selectedDeviceId } }
+      : { facingMode: 'user' };
+
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: false })
+      .getUserMedia({ video: videoConstraints, audio: false })
       .then((s) => {
         stream = s;
         if (videoRef.current) {
@@ -79,7 +115,7 @@ const App = () => {
         stream.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, selectedDeviceId]);
 
   // 3. 1秒ごとにカメラ映像を取得してグループ数検出を実行
   useEffect(() => {
@@ -162,6 +198,25 @@ const App = () => {
         }`}
       >
         <div className="flex flex-col w-2/3 h-full items-center justify-center">
+          {/* カメラ選択プルダウン */}
+          <div className="mb-4 w-full max-w-md">
+            <label htmlFor="camera-select" className="block text-sm font-medium text-gray-700 mb-1">
+              使用するカメラを選択
+            </label>
+            <select
+              id="camera-select"
+              value={selectedDeviceId}
+              onChange={(e) => setSelectedDeviceId(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800"
+            >
+              {cameras.map((camera, index) => (
+                <option key={camera.deviceId} value={camera.deviceId}>
+                  {camera.label || `カメラ ${index + 1}`}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {currentFrame && (
             <ImageCropper
               ref={cropperRef}
