@@ -1,25 +1,21 @@
 class AggregateGroupCount {
   #data: number[];
-  #nextIndex: number;
   #max: number;
 
   constructor() {
     this.#data = [];
-    this.#nextIndex = 0;
     this.#max = 0;
   }
 
   record(count: number): void {
-    this.#data[this.#nextIndex] = count;
-    this.#nextIndex++;
-    if (count > this.#max) {
-      this.#max = count;
-    }
+    this.#data.push(count);
+
+    // 最大値更新か確認
+    if (count > this.#max) this.#max = count;
   }
 
   clear(): void {
     this.#data.length = 0;
-    this.#nextIndex = 0;
     this.#max = 0;
   }
 
