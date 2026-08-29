@@ -7,12 +7,17 @@ import QrScanner from 'qr-scanner';
 import { isValidSecretUuid } from '../../utils/services/isValidSecretUuid';
 import { getEventName } from './utils/getEventName';
 import SettingsIcon from './assets/Settings.svg?react';
+import { aggregateGroupCount } from './utils/aggregateGroupCount';
+import { EveryMinuteTimer } from './utils/EveryMinuteTimer';
+import { enqueueGroupCount } from './utils/sendQueue';
+import { EventId } from './types';
 
 let videoTimestamp: number = -1;
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isSettingOpen, setIsSettingOpen] = useState<boolean>(false);
+  const [eventId, setEventId] = useState<EventId | null>(null);
 
   const qrVideoRef = useRef<HTMLVideoElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -114,6 +119,7 @@ const App = () => {
         if (isValid) {
           const eventName = await getEventName(uuid);
           window.alert(`認証に成功しました！\n出し物名: ${eventName}`);
+          setEventId(uuid);
           setIsAuthenticated(true);
         } else {
           window.alert('認証に失敗しました。無効なQRコードです。');
@@ -190,6 +196,7 @@ const App = () => {
           const detectedGroups = await getGroups(processedImg);
           processedImg.src = ''; // 不要になった、内部バッファとBlobの紐付けを完全に切る
           setGroups(detectedGroups);
+          aggregateGroupCount.record(detectedGroups.length);
         }
       }
     };
@@ -199,6 +206,24 @@ const App = () => {
       video.removeEventListener('timeupdate', handleTimeUpdate);
     };
   }, [isAuthenticated]);
+
+  // 4. 毎分タイマー処理
+  useEffect(() => {
+    if (!isAuthenticated || !eventId) return;
+
+    const timer = new EveryMinuteTimer(async () => {
+      const maxCount = aggregateGroupCount.getMax();
+      const now = new Date();
+      await enqueueGroupCount(eventId, maxCount, now);
+      aggregateGroupCount.clear();
+    });
+
+    timer.start();
+
+    return () => {
+      timer.stop();
+    };
+  }, [isAuthenticated, eventId]);
 
   if (!isAuthenticated) {
     return (
@@ -281,6 +306,6 @@ const App = () => {
       </div>
     </main>
   );
-}
+};
 
 export default App;
