@@ -15,4 +15,4 @@ if (typeof window !== 'undefined') {
   }, 30000);
 }
 
-export { recordGroupCount } from './recordGroupCount';
+export { enqueueGroupCount } from './enqueueGroupCount';

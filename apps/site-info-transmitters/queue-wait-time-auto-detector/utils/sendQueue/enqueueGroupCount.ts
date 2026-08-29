@@ -2,7 +2,7 @@ import { EventId, GroupCount, RecordedTimestamp } from './types';
 import { queueManager } from './queueManager';
 import { sendData } from './sendData';
 
-export async function recordGroupCount(
+export async function enqueueGroupCount(
   eventId: EventId,
   groupCount: GroupCount,
   timestamp: RecordedTimestamp = new Date()
