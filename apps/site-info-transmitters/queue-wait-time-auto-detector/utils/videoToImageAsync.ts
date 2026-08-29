@@ -1,5 +1,5 @@
 // 長時間稼働時のOOM対策でキャンバス使い回し
-const canvas = document.createElement('canvas');
+const canvas = new OffscreenCanvas(0, 0);
 const ctx = canvas.getContext('2d');
 
 function drawVideoToCanvas(video: HTMLVideoElement): void {
@@ -7,7 +7,7 @@ function drawVideoToCanvas(video: HTMLVideoElement): void {
   const width = video.videoWidth || 0;
   const height = video.videoHeight || 0;
 
-  /* 
+  /*
   毎回サイズ変更が走るとブラウザ側で内部メモリの再確保が起きるため、
   サイズが変わったときだけ変更するようにする
   */
@@ -32,7 +32,7 @@ export function videoToImageAsync(
       return resolve(null);
     }
 
-    canvas.toBlob((blob) => {
+    canvas.convertToBlob({ type: mime, quality }).then((blob) => {
       if (!blob) {
         return resolve(null);
       }
@@ -55,6 +55,8 @@ export function videoToImageAsync(
       };
       
       img.src = objectUrl;
-    }, mime, quality);
+    }).catch(() => {
+      resolve(null);
+    });
   });
 }
