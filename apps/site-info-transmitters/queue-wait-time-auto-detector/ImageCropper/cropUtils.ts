@@ -1,10 +1,10 @@
 import { ImageLayout, CropResult, CroppedBoundingBox } from './types';
 
 // 長時間稼働時のOOM対策でキャンバス使い回し
-const canvas = document.createElement('canvas');
+const canvas = new OffscreenCanvas(0, 0);
 const ctx = canvas.getContext('2d');
 
-const trimmedCanvas = document.createElement('canvas');
+const trimmedCanvas = new OffscreenCanvas(0, 0);
 const trimmedCtx = trimmedCanvas.getContext('2d');
 
 /**
@@ -123,7 +123,7 @@ export const cropImage = (
     };
 
     // 3. 高解像度の HTMLImageElement を生成して返却
-    trimmedCanvas.toBlob((blob) => {
+    trimmedCanvas.convertToBlob({ type: 'image/png' }).then((blob) => {
       if (!blob) {
         reject(new Error('Blobの生成に失敗しました。'));
         return;
@@ -143,6 +143,8 @@ export const cropImage = (
       };
 
       clippedImage.src = objectUrl;
-    }, 'image/png');
+    }).catch((err) => {
+      reject(err);
+    });
   });
 };
