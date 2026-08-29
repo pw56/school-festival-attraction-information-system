@@ -42,10 +42,6 @@ export async function sendData(): Promise<void> {
 // 引数の型はそのうち決めるので、それまでは`unknown`
 async function simulateApiCall(data: unknown): Promise<void> {
   // 未定のため処理なし（開発時は必要に応じてレスポンスの模擬を行う）
-  if (Array.isArray(data) && data.length > 0) {
-    const firstItem = data[0];
-    const message = `ID: ${firstItem.eventId}\nグループ数: ${firstItem.groupCount}\n${firstItem.timestamp ? new Date(firstItem.timestamp).toISOString() : ''}`;
-    window.alert(message);
-  }
+  // 既にこのAPI送信以外はテスト完了済み
   return Promise.resolve();
 }
