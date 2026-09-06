@@ -1,7 +1,7 @@
 # 出し物情報アプリ
 
 ## 実装メモ
-- ほぼFigmaに仕様とか書いてるので参照(Figmaの説明やメモ書きを優先)
+- ほぼFigmaに仕様とか書いてるので参照(Figmaの説明やメモ書きを優先、FigmaがSSOT)
 - ReactのSPAのPWA
 
 - 取得した整理券はIndexedDB(Dexie.js)でローカルに保存
