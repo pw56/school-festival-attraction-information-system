@@ -1,0 +1,21 @@
+# 出し物の種類とシステムのキー
+
+- 飲食: `food_and_drink`
+- 乗り物: `vehicles`
+- 縁日: `fair_stalls`
+- ホラー: `horror`
+- 謎解き: `riddle_solving`
+- スポーツ: `sports`
+- エンタメ: `entertainment`
+- 物販: `product_sales`
+- ワークショップ: `workshop`
+- 展示: `exhibition`
+- ステージ: `stage`
+- 休憩所: `rest_area`
+- 案内所: `information_desk`
+- トイレ: `restrooms`
+- 階段: `stairs`
+- エレベーター: `elevator`
+- 救護室: `first_aid_room`
+- 駐車場: `parking_lot`
+- その他: `others`
