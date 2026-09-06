@@ -1,21 +1,59 @@
 # 出し物の種類とシステムのキー
 
-- 飲食: `food_and_drink`
-- 乗り物: `vehicles`
-- 縁日: `fair_stalls`
-- ホラー: `horror`
-- 謎解き: `riddle_solving`
-- スポーツ: `sports`
-- エンタメ: `entertainment`
-- 物販: `product_sales`
-- ワークショップ: `workshop`
-- 展示: `exhibition`
-- ステージ: `stage`
-- 休憩所: `rest_area`
-- 案内所: `information_desk`
-- トイレ: `restrooms`
-- 階段: `stairs`
-- エレベーター: `elevator`
-- 救護室: `first_aid_room`
-- 駐車場: `parking_lot`
-- その他: `others`
+- 飲食
+  - システムのキー: `food_and_drink`
+  - アイコンの色: `#FF6B6B`
+- 乗り物
+  - システムのキー: `vehicles`
+  - アイコンの色: `#4DABF7`
+- 縁日
+  - システムのキー: `fair_stalls`
+  - アイコンの色: `#FF922B`
+- ホラー
+  - システムのキー: `horror`
+  - アイコンの色: `#862E9C`
+- 謎解き
+  - システムのキー: `riddle_solving`
+  - アイコンの色: `#1098AD`
+- スポーツ
+  - システムのキー: `sports`
+  - アイコンの色: `#51CF66`
+- エンタメ
+  - システムのキー: `entertainment`
+  - アイコンの色: `#FCC419`
+- 物販
+  - システムのキー: `product_sales`
+  - アイコンの色: `#E64980`
+- ワークショップ
+  - システムのキー: `workshop`
+  - アイコンの色: `#A9E34B`
+- 展示
+  - システムのキー: `exhibition`
+  - アイコンの色: `#228BE6`
+- ステージ
+  - システムのキー: `stage`
+  - アイコンの色: `#BE4BDB`
+- 休憩所
+  - システムのキー: `rest_area`
+  - アイコンの色: `#20C997`
+- 案内所
+  - システムのキー: `information_desk`
+  - アイコンの色: `#495057`
+- トイレ
+  - システムのキー: `restrooms`
+  - アイコンの色: `#748FFC`
+- 階段
+  - システムのキー: `stairs`
+  - アイコンの色: `#ADB5BD`
+- エレベーター
+  - システムのキー: `elevator`
+  - アイコンの色: `#868E96`
+- 救護室
+  - システムのキー: `first_aid_room`
+  - アイコンの色: `#FA5252`
+- 駐車場
+  - システムのキー: `parking_lot`
+  - アイコンの色: `#1A73E8`
+- その他
+  - システムのキー: `others`
+  - アイコンの色: `#CED4DA`
