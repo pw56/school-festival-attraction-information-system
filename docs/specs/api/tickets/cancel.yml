@@ -17,13 +17,9 @@ paths:
                 ticket_id:
                   type: string
                   description: キャンセル対象の整理券ID。
-                user_id:
-                  type: string
-                  description: キャンセルを行うユーザーのID（照合用）。
               
               required:
                 - ticket_id
-                - user_id
       responses:
         '200':
           description: キャンセル成功。
