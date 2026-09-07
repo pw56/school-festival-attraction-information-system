@@ -1,0 +1,45 @@
+openapi: 3.1.0
+info:
+  title: authenticate
+  description: 整理券を使用するAPI。
+  version: 1.0.0
+paths:
+  /api/tickets/authenticate:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+
+              properties:
+                ticket_id:
+                  type: string
+                  description: 認証対象の整理券ID。
+
+              required:
+                - ticket_id
+      responses:
+        '200':
+          description: 認証成功。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                examples:
+                  - message: "Ticket authenticated successfully."
+        '400':
+          description: チケットが存在しないか、ユーザーが不一致の場合など。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                examples:
+                  - message: "Ticket not found or user mismatch."
