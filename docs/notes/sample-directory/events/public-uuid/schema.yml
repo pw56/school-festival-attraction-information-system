@@ -1,5 +1,5 @@
-$schema: "https://json-schema.org/draft/2020-12/schema"
-$id: "https://example.com/schemas/attraction.yaml"
+$schema: "https://json-schema.org"
+$id: "https://example.com"
 title: "AttractionData"
 description: "Schema for deployed attraction information API payload."
 type: "object"
@@ -102,6 +102,7 @@ $defs:
           type: "object"
           required:
             - "condition"
+            - "operating_hours"
           additionalProperties: false
           properties:
             condition:
@@ -141,7 +142,6 @@ $defs:
                 required:
                   - "start_date"
                   - "end_date"
-                  - "operating_hours"
             - if:
                 properties:
                   condition:
@@ -149,14 +149,6 @@ $defs:
               then:
                 required:
                   - "target"
-                  - "operating_hours"
-            - if:
-                properties:
-                  condition:
-                    const: "default"
-              then:
-                required:
-                  - "operating_hours"
   availableTicketSlots:
     type: "object"
     required:
