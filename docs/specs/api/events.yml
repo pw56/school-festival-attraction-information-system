@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: events
-  description: 出し物（アトラクション）の一覧または特定の出し物の情報を取得するAPI。
+  description: 公開されている出し物（アトラクション）の一覧を取得するAPI。
   version: 1.0.0
 paths:
   /api/events:
@@ -9,13 +9,6 @@ paths:
       tags:
         - Events
       operationId: getEvents
-      parameters:
-        - name: id
-          in: query
-          required: false
-          description: 出し物を一意に識別するID。指定した場合は該当する出し物のみを含む配列を返します。
-          schema:
-            type: string
       responses:
         '200':
           description: 出し物の配列。
@@ -32,6 +25,9 @@ paths:
                     name:
                       type: string
                       description: 出し物名。
+                    thumbnail_path:
+                      type: string
+                      description: サムネイル画像のパス（例: /events/thumbnails/id.webp）。
                     thumbnail_url:
                       type: string
                       description: サムネイル画像のURL。
@@ -79,6 +75,7 @@ paths:
                   required:
                     - id
                     - name
+                    - thumbnail_path
                     - thumbnail_url
                     - short_description
                     - description
@@ -89,10 +86,10 @@ paths:
                     - has_ticketing
               examples:
                 all_events:
-                  summary: 全件取得時の例
                   value:
                     - id: "exciting_coaster"
                       name: "エキサイティングコースター"
+                      thumbnail_path: "/events/thumbnails/exciting_coaster.webp"
                       thumbnail_url: "https://.../thumbnail.png"
                       short_description: "絶叫系のコースターです。"
                       description: "強烈な振動と急降下が特徴のコースターです。"
@@ -109,6 +106,7 @@ paths:
                       has_ticketing: true
                     - id: "haunted_house"
                       name: "お化け屋敷"
+                      thumbnail_path: "/events/thumbnails/haunted_house.webp"
                       thumbnail_url: "https://.../haunt.png"
                       short_description: "暗闇を進むホラー体験。"
                       description: "暗闇を進むホラー体験。"
@@ -117,25 +115,6 @@ paths:
                       accessibility: []
                       other_info: []
                       has_ticketing: false
-                single_event:
-                  summary: ID指定取得時の例
-                  value:
-                    - id: "exciting_coaster"
-                      name: "エキサイティングコースター"
-                      thumbnail_url: "https://.../thumbnail.png"
-                      short_description: "絶叫系のコースターです。"
-                      description: "強烈な振動と急降下が特徴のコースターです。"
-                      wait_time: 25
-                      map_image_url: "https://.../map.png"
-                      accessibility:
-                        - label: "車椅子対応"
-                          value: "false"
-                        - label: "身長制限"
-                          value: "120cm以上"
-                      other_info:
-                        - label: "注意事項"
-                          content: "妊娠中の方は利用をご遠慮ください。"
-                      has_ticketing: true
         '400':
           description: 不正なリクエスト、または出し物情報の取得失敗。
           content:

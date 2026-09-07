@@ -5,6 +5,7 @@ description: "Schema for deployed event information API payload."
 type: "object"
 required:
   - "name"
+  - "thumbnail_path"
   - "description"
   - "operating_hour_rules"
   - "duration"
@@ -19,6 +20,8 @@ properties:
   name:
     type: "string"
     minLength: 1
+  thumbnail_path:
+    type: "string"
   description:
     type: "string"
   operating_hour_rules:
