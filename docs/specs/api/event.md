@@ -1,4 +1,4 @@
-# attraction (個別ページ)
+# event (個別ページ)
 
 ## 概要
 特定の出し物の詳細情報を取得するためのAPI。出し物の個別ページで表示する情報（サムネイル、待ち時間、マップ、その他情報）を返す。
@@ -11,7 +11,7 @@
 | 通信方式 | REST API |
 | データ形式 | JSON(`application/json`) |
 | HTTPメソッド | GET |
-| エンドポイント | `/api/attractions/{id}` |
+| エンドポイント | `/api/events?id` |
 
 ---
 
@@ -20,7 +20,7 @@
 ### パスパラメータ
 | キー | 型 | 内容 |
 |---|---|---|
-| `id` | `string` | 出し物のID（`/api/attractions` の `id` と同じ）。 |
+| `id` | `string` | 出し物のID（`/api/events` の `id` と同じ）。 |
 
 ---
 
@@ -79,6 +79,6 @@
 #### ボディ
 ```json
 {
-  "message": "Attraction not found."
+  "message": "event not found."
 }
 ```

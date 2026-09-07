@@ -1,4 +1,4 @@
-# attractions
+# events
 
 ## 概要
 公開されている出し物（アトラクション）の一覧を取得するためのAPI。モバイルアプリのトップや一覧画面で利用する。
@@ -11,7 +11,7 @@
 | 通信方式 | REST API |
 | データ形式 | JSON(`application/json`) |
 | HTTPメソッド | GET |
-| エンドポイント | `/api/attractions` |
+| エンドポイント | `/api/events` |
 
 ---
 
@@ -69,6 +69,6 @@
 #### ボディ
 ```json
 {
-  "message": "Unable to fetch attractions."
+  "message": "Unable to fetch events."
 }
 ```
