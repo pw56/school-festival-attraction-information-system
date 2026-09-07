@@ -17,13 +17,17 @@ paths:
                 attraction_id:
                   type: string
                   description: 取得対象の出し物ID。
-                scheduled_time:
+                start_time:
                   type: [string, "null"]
-                  description: （オプション）時間指定がある場合の ISO8601 形式の時刻。無ければ `null`。
+                  description: （オプション）時間指定がある場合のタイムゾーン付き ISO8601 形式の開始時刻（例: 2026-08-01T15:00:00 09:00）。無ければ `null`。
+                end_time:
+                  type: [string, "null"]
+                  description: （オプション）時間指定がある場合のタイムゾーン付き ISO8601 形式の終了時刻（例: 2026-08-01T15:30:00 09:00）。無ければ `null`。
               
               required:
                 - attraction_id
-                - scheduled_time
+                - start_time
+                - end_time
 
       responses:
 
