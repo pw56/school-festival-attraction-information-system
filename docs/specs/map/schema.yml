@@ -132,6 +132,20 @@ definitions:
           type: number
         minItems: 3
         maxItems: 3
+      gps:
+        type: object
+        properties:
+          latitude:
+            type: number
+            minimum: -90
+            maximum: 90
+          longitude:
+            type: number
+            minimum: -180
+            maximum: 180
+          altitude:
+            type: number
+        additionalProperties: false
       polyhedron:
         $ref: '#/definitions/Polyhedron'
     additionalProperties: false
