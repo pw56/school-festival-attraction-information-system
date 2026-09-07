@@ -1,0 +1,170 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Map3DModel
+type: object
+required:
+  - vertices
+  - lines
+  - curves
+  - sites
+properties:
+  vertices:
+    type: array
+    items:
+      type: object
+      required:
+        - id
+        - position
+      properties:
+        id:
+          type: string
+        position:
+          type: array
+          items:
+            type: number
+          minItems: 3
+          maxItems: 3
+      additionalProperties: false
+  lines:
+    type: array
+    items:
+      type: object
+      required:
+        - id
+        - startVertexId
+        - endVertexId
+      properties:
+        id:
+          type: string
+        startVertexId:
+          type: string
+        endVertexId:
+          type: string
+      additionalProperties: false
+  curves:
+    type: array
+    items:
+      type: object
+      required:
+        - id
+        - startVertexId
+        - endVertexId
+        - controlPoints
+      properties:
+        id:
+          type: string
+        startVertexId:
+          type: string
+        endVertexId:
+          type: string
+        controlPoints:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+            minItems: 3
+            maxItems: 3
+          minItems: 1
+      additionalProperties: false
+  sites:
+    type: array
+    items:
+      type: object
+      required:
+        - id
+        - buildings
+      properties:
+        id:
+          type: string
+        buildings:
+          type: array
+          items:
+            $ref: '#/definitions/Building'
+      additionalProperties: false
+definitions:
+  Building:
+    type: object
+    required:
+      - id
+      - isOutdoor
+    properties:
+      id:
+        type: string
+      isOutdoor:
+        type: boolean
+      floors:
+        type: array
+        items:
+          $ref: '#/definitions/Floor'
+      rooms:
+        type: array
+        items:
+          $ref: '#/definitions/Room'
+    additionalProperties: false
+  Floor:
+    type: object
+    required:
+      - id
+      - rooms
+    properties:
+      id:
+        type: string
+      level:
+        type: integer
+      rooms:
+        type: array
+        items:
+          $ref: '#/definitions/Room'
+    additionalProperties: false
+  Room:
+    type: object
+    required:
+      - id
+      - polyhedron
+    properties:
+      id:
+        type: string
+      attractionPublicId:
+        type: string
+      position:
+        type: array
+        items:
+          type: number
+        minItems: 3
+        maxItems: 3
+      polyhedron:
+        $ref: '#/definitions/Polyhedron'
+    additionalProperties: false
+  Polyhedron:
+    type: object
+    required:
+      - faces
+    properties:
+      faces:
+        type: array
+        items:
+          type: object
+          required:
+            - edges
+          properties:
+            edges:
+              type: array
+              items:
+                type: object
+                required:
+                  - type
+                  - id
+                properties:
+                  type:
+                    type: string
+                    enum:
+                      - line
+                      - curve
+                  id:
+                    type: string
+                additionalProperties: false
+              minItems: 3
+          additionalProperties: false
+        minItems: 4
+    additionalProperties: false
+additionalProperties: false
