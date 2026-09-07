@@ -1,7 +1,7 @@
-$schema: "https://json-schema.org"
-$id: "https://example.com"
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://info-system.com"
 title: "AttractionData"
-description: "Schema for deployed attraction information API payload."
+description: "Schema for deployed event information API payload."
 type: "object"
 required:
   - "name"
