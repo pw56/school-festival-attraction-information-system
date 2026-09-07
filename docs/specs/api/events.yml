@@ -28,9 +28,6 @@ paths:
                     thumbnail_path:
                       type: string
                       description: サムネイル画像のパス（例: /events/thumbnails/id.webp）。
-                    thumbnail_url:
-                      type: string
-                      description: サムネイル画像のURL。
                     short_description:
                       type: string
                       description: 短い概要。
@@ -76,7 +73,6 @@ paths:
                     - id
                     - name
                     - thumbnail_path
-                    - thumbnail_url
                     - short_description
                     - description
                     - wait_time
@@ -90,7 +86,6 @@ paths:
                     - id: "exciting_coaster"
                       name: "エキサイティングコースター"
                       thumbnail_path: "/events/thumbnails/exciting_coaster.webp"
-                      thumbnail_url: "https://.../thumbnail.png"
                       short_description: "絶叫系のコースターです。"
                       description: "強烈な振動と急降下が特徴のコースターです。"
                       wait_time: 30
@@ -107,7 +102,6 @@ paths:
                     - id: "haunted_house"
                       name: "お化け屋敷"
                       thumbnail_path: "/events/thumbnails/haunted_house.webp"
-                      thumbnail_url: "https://.../haunt.png"
                       short_description: "暗闇を進むホラー体験。"
                       description: "暗闇を進むホラー体験。"
                       wait_time: null
