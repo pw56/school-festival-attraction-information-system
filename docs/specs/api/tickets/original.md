@@ -85,34 +85,3 @@
 ```json
 { "message": "Ticket not found or user mismatch." }
 ```
-
----
-
-## 3) ユーザーの予約一覧取得
-
-### 概要
-指定ユーザーが取得した整理券の一覧を取得する。
-
-### 基本情報
-| 項目 | 内容 |
-|---|---|
-| HTTPメソッド | GET |
-| エンドポイント | `/api/tickets?user_id={user_id}` |
-
-#### 成功時
-ステータスコード: `200`
-
-ボディサンプル:
-```json
-[
-  { "ticket_id": "tkt_12345", "attraction_id": "exciting_coaster", "scheduled_time": "2026-08-01T15:00:00+09:00" }
-]
-```
-
-#### 失敗時
-ステータスコード: `400`
-
-ボディサンプル:
-```json
-{ "message": "Unable to fetch tickets." }
-```
