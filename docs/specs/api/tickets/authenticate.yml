@@ -6,6 +6,9 @@ info:
 paths:
   /api/tickets/authenticate:
     post:
+      tags:
+        - Tickets
+      operationId: authenticateTicket
       requestBody:
         required: true
         content:

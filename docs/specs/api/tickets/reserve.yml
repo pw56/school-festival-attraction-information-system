@@ -6,6 +6,9 @@ info:
 paths:
   /api/tickets/reserve:
     post:
+      tags:
+        - Tickets
+      operationId: reserveTicket
       requestBody:
         required: true
         content:

@@ -6,6 +6,9 @@ info:
 paths:
   /api/tickets/cancel:
     post:
+      tags:
+        - Tickets
+      operationId: cancelTicket
       requestBody:
         required: true
         content:
