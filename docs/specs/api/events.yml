@@ -1,0 +1,151 @@
+openapi: 3.1.0
+info:
+  title: events
+  description: 出し物（アトラクション）の一覧または特定の出し物の情報を取得するAPI。
+  version: 1.0.0
+paths:
+  /api/events:
+    get:
+      tags:
+        - Events
+      operationId: getEvents
+      parameters:
+        - name: id
+          in: query
+          required: false
+          description: 出し物を一意に識別するID。指定した場合は該当する出し物のみを含む配列を返します。
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 出し物の配列。
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: 出し物を一意に識別するID（スラグやUUID）。
+                    name:
+                      type: string
+                      description: 出し物名。
+                    thumbnail_url:
+                      type: string
+                      description: サムネイル画像のURL。
+                    short_description:
+                      type: string
+                      description: 短い概要。
+                    description:
+                      type: string
+                      description: 詳細説明（HTML またはマークダウンの可能性あり）。
+                    wait_time:
+                      type: [integer, "null"]
+                      description: 現在の待ち時間（分）。存在しない場合は `null`。
+                    map_image_url:
+                      type: [string, "null"]
+                      description: マップ画像のURL（ポップアップ用）。
+                    accessibility:
+                      type: array
+                      description: アクセシビリティ設定の配列。
+                      items:
+                        type: object
+                        properties:
+                          label:
+                            type: string
+                          value:
+                            type: string
+                        required:
+                          - label
+                          - value
+                    other_info:
+                      type: array
+                      description: ラベルとコンテンツの配列。
+                      items:
+                        type: object
+                        properties:
+                          label:
+                            type: string
+                          content:
+                            type: string
+                        required:
+                          - label
+                          - content
+                    has_ticketing:
+                      type: boolean
+                      description: 整理券（チケット）機能の有無。
+                  required:
+                    - id
+                    - name
+                    - thumbnail_url
+                    - short_description
+                    - description
+                    - wait_time
+                    - map_image_url
+                    - accessibility
+                    - other_info
+                    - has_ticketing
+              examples:
+                all_events:
+                  summary: 全件取得時の例
+                  value:
+                    - id: "exciting_coaster"
+                      name: "エキサイティングコースター"
+                      thumbnail_url: "https://.../thumbnail.png"
+                      short_description: "絶叫系のコースターです。"
+                      description: "強烈な振動と急降下が特徴のコースターです。"
+                      wait_time: 30
+                      map_image_url: "https://.../map.png"
+                      accessibility:
+                        - label: "車椅子対応"
+                          value: "false"
+                        - label: "身長制限"
+                          value: "120cm以上"
+                      other_info:
+                        - label: "注意事項"
+                          content: "妊娠中の方は利用をご遠慮ください。"
+                      has_ticketing: true
+                    - id: "haunted_house"
+                      name: "お化け屋敷"
+                      thumbnail_url: "https://.../haunt.png"
+                      short_description: "暗闇を進むホラー体験。"
+                      description: "暗闇を進むホラー体験。"
+                      wait_time: null
+                      map_image_url: null
+                      accessibility: []
+                      other_info: []
+                      has_ticketing: false
+                single_event:
+                  summary: ID指定取得時の例
+                  value:
+                    - id: "exciting_coaster"
+                      name: "エキサイティングコースター"
+                      thumbnail_url: "https://.../thumbnail.png"
+                      short_description: "絶叫系のコースターです。"
+                      description: "強烈な振動と急降下が特徴のコースターです。"
+                      wait_time: 25
+                      map_image_url: "https://.../map.png"
+                      accessibility:
+                        - label: "車椅子対応"
+                          value: "false"
+                        - label: "身長制限"
+                          value: "120cm以上"
+                      other_info:
+                        - label: "注意事項"
+                          content: "妊娠中の方は利用をご遠慮ください。"
+                      has_ticketing: true
+        '400':
+          description: 不正なリクエスト、または出し物情報の取得失敗。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Unable to fetch events."
