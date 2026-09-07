@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './global.css';
 import { getGroups, Groups } from './getGroups';
 import { ResultView } from './components/ResultView';
@@ -193,6 +193,148 @@ const App = () => {
     };
   }, [mediaType, mediaSrc]);
 
+  // 設定完了ボタン押下時の処理
+  const handleCompleteSettings = async () => {
+    setIsSettingOpen(false);
+    isWakeLockRequestedRef.current = true;
+    await requestWakeLock();
+  };
+
+  // 1. QRスキャナー起動とスキャン処理
+  useEffect(() => {
+    if (!isCameraReady || isAuthenticated || !qrVideoRef.current) return;
+
+    let isProcessing = false;
+    const scanner = new QrScanner(
+      qrVideoRef.current,
+      async (result) => {
+        if (isProcessing) return;
+        isProcessing = true;
+        scanner.stop();
+
+        const uuid = result.data;
+        const isValid = await isValidSecretUuid(uuid);
+
+        if (isValid) {
+          const eventName = await getEventName(uuid);
+          window.alert(`認証に成功しました！\n出し物名: ${eventName}`);
+          setEventId(uuid);
+          setIsAuthenticated(true);
+        } else {
+          window.alert('認証に失敗しました。無効なQRコードです。');
+          isProcessing = false;
+          scanner.start();
+        }
+      },
+      {
+        returnDetailedScanResult: true,
+        preferredCamera: selectedDeviceId ? selectedDeviceId : 'user',
+      }
+    );
+
+    scanner.start();
+
+    return () => {
+      scanner.destroy();
+    };
+  }, [isCameraReady, isAuthenticated, selectedDeviceId]);
+
+  // 2. 認証成功後にWebカメラのストリーミングを開始
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    let stream: MediaStream | null = null;
+    const videoConstraints: MediaTrackConstraints = selectedDeviceId
+      ? { deviceId: { exact: selectedDeviceId } }
+      : { facingMode: 'user' };
+
+    navigator.mediaDevices
+      .getUserMedia({ video: videoConstraints, audio: false })
+      .then((s) => {
+        stream = s;
+        if (videoRef.current) {
+          videoRef.current.srcObject = s;
+          videoRef.current.play().catch(() => {});
+        }
+      })
+      .catch((err) => {
+        console.error('カメラの起動に失敗しました', err);
+      });
+
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [isAuthenticated, selectedDeviceId]);
+
+  // 3. 1秒ごとにカメラ映像を取得してグループ数検出を実行
+  useEffect(() => {
+    if (!videoRef.current || !isAuthenticated) return;
+
+    const video = videoRef.current;
+
+    const handleTimeUpdate = async () => {
+      const currentTimeFloor = Math.floor(video.currentTime);
+
+      if (currentTimeFloor > videoTimestamp) {
+        videoTimestamp = currentTimeFloor;
+
+        if (video.readyState >= 2) {
+          const rawImg = await videoToImageAsync(video);
+          if (!rawImg) return;
+
+          setCurrentFrame(rawImg);
+
+          let processedImg: HTMLImageElement = rawImg;
+          if (cropperRef.current) {
+            const result = await cropperRef.current.getClippedImage();
+            processedImg = result.croppedImage;
+          }
+
+          const detectedGroups = await getGroups(processedImg);
+          processedImg.src = ''; // 不要になった、内部バッファとBlobの紐付けを完全に切る
+          setGroups(detectedGroups);
+          aggregateGroupCount.record(detectedGroups.length);
+        }
+      }
+    };
+
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    return () => {
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+    };
+  }, [isAuthenticated]);
+
+  // 4. 毎分タイマー処理
+  useEffect(() => {
+    if (!isAuthenticated || !eventId) return;
+
+    const timer = new EveryMinuteTimer(async () => {
+      const maxCount = aggregateGroupCount.getMax();
+      const now = new Date();
+      await enqueueGroupCount(eventId, maxCount, now);
+      aggregateGroupCount.clear();
+    });
+
+    timer.start();
+
+    return () => {
+      timer.stop();
+    };
+  }, [isAuthenticated, eventId]);
+
+  if (!isAuthenticated) {
+    return (
+      <main className="flex h-screen w-screen flex-col items-center justify-center bg-gray-100 font-sans">
+        <h1 className="mb-4 text-xl font-bold text-gray-800">QRコードをスキャンしてください</h1>
+        <div className="relative h-64 w-64 overflow-hidden rounded-lg border-2 border-gray-400 bg-black shadow-md">
+          <video ref={qrVideoRef} className="h-full w-full object-cover" />
+        </div>
+      </main>
+    );
+  }
+
   return (
     /* 元のCSS設定（透明背景、中央配置、スクロールバー非表示、フォント） */
     <main className="flex h-screen w-screen items-center justify-center bg-transparent overflow-hidden font-sans">
@@ -307,6 +449,6 @@ const App = () => {
       )}
     </main>
   );
-}
+};
 
 export default App;
