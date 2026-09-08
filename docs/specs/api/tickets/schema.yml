@@ -7,6 +7,7 @@ required:
   - "ticket_id"
   - "event_id"
   - "ticket_slot"
+  - "auth_info"
 additionalProperties: false
 properties:
   ticket_id:

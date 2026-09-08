@@ -29,19 +29,27 @@ paths:
       responses:
 
         '200':
-          description: |
-            チケットのIDとメッセージ。
+          description: チケットの取得成功。
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  ticket_id:
-                    $ref: "https://example.com/schemas/ticket.json#/properties/ticket_id"
+                  ticket:
+                    $ref: "https://example.com/schemas/ticket.json"
                   message:
                     type: string
+                required:
+                  - ticket
+                  - message
                 examples:
-                  - ticket_id: "5f2d28d2-5d18-21e8-f32b-dafb0a67babb"
+                  - ticket:
+                      ticket_id: "5f2d28d2-5d18-21e8-f32b-dafb0a67babb"
+                      event_id: "event-123"
+                      ticket_slot:
+                        start_time: "2026-08-01T15:00:00 09:00"
+                        end_time: "2026-08-01T15:30:00 09:00"
+                      auth_info: "JBSWY3DPEHPK3PXP"
                     message: "Ticket reserved successfully."
 
         '400':
