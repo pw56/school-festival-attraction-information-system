@@ -7,6 +7,7 @@ required:
   - "ticket_id"
   - "event_id"
   - "ticket_slot"
+  - "auth_type"
   - "auth_info"
 additionalProperties: false
 properties:
@@ -31,6 +32,12 @@ properties:
         type: "string"
         format: "date-time"
         description: "ISO8601形式の終了時刻。"
+  auth_type:
+    type: "string"
+    enum:
+      - "totp"
+      - "token"
+    description: "認証タイプ。"
   auth_info:
     type: "string"
     description: "認証情報（TOTPのシークレットキーまたはトークン）。"

@@ -21,10 +21,13 @@ paths:
                   $ref: "https://example.com/schemas/ticket.json#/properties/event_id"
                 ticket_slot:
                   $ref: "https://example.com/schemas/ticket.json#/properties/ticket_slot"
+                auth_type:
+                  $ref: "https://example.com/schemas/ticket.json#/properties/auth_type"
               
               required:
                 - event_id
                 - ticket_slot
+                - auth_type
 
       responses:
 
