@@ -38,7 +38,7 @@ paths:
                         format: date-time
                         description: 地域を含むISO8601形式のタイムスタンプ
                       group_counts:
-                        $ref: '#/$defs/queueGroupCounts'
+                        $ref: 'https://example.com/schemas/queue_group_counts.json'
       responses:
         '200':
           description: 送信完了。
@@ -55,11 +55,3 @@ paths:
                 default:
                   value:
                     message: "Unable to transmit queue group data."
-
-$defs:
-  queueGroupCounts:
-    type: array
-    description: 全グループの人数を表す数値の配列
-    items:
-      type: "integer"
-      minimum: 0
