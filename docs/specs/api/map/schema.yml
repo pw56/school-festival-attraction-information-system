@@ -124,7 +124,7 @@ definitions:
     properties:
       id:
         type: string
-      attractionPublicId:
+      eventId:
         type: string
       position:
         type: array
