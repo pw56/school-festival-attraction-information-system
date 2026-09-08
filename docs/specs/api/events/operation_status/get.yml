@@ -39,6 +39,19 @@ paths:
                 default:
                   value:
                     status: "operating"
+        '400':
+          description: 不正なリクエスト、または出し物運営状況の取得失敗。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Unable to fetch event status."
         '404':
           description: 出し物が存在しない。
           content:
