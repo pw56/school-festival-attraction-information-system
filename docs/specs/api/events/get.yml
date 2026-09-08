@@ -22,8 +22,9 @@ paths:
               examples:
                 all_events:
                   value:
-                    - name: "エキサイティングコースター"
-                      thumbnail_path: "/events/thumbnails/exciting_coaster.webp"
+                    - id: "uuid"
+                      name: "エキサイティングコースター"
+                      thumbnail_path: "/events/thumbnails/uuid.webp"
                       description: "強烈な振動と急降下が特徴のコースターです。"
                       operating_hour_rules:
                         timezone: "Asia/Tokyo"

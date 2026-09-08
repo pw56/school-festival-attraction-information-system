@@ -4,12 +4,15 @@ title: "EventData"
 description: "Schema for deployed event information API payload."
 type: "object"
 required:
+  - "id"
   - "name"
   - "thumbnail_path"
   - "location"
   - "type"
 additionalProperties: false
 properties:
+  id:
+    type: "string"
   name:
     type: "string"
     minLength: 1
