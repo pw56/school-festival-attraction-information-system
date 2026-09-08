@@ -1,5 +1,5 @@
 <!-- 1. 身体・移動サポート（校内・教室の移動） -->
-- `wheelchair_accessible`: 車椅子対応（教室内の通路幅の確保、段差へのスロープ設置など）
+- `wheelchair_accessible`: 車椅子対応
 - `step_free_access`: 段差なし
 - `accessible_restroom`: 多機能トイレ
 
