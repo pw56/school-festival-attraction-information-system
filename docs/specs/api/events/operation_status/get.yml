@@ -1,0 +1,67 @@
+openapi: 3.1.0
+info:
+  title: Event Status API
+  description: 指定された出し物の運営状況（ステータス）を取得するAPI。
+  version: 1.0.0
+paths:
+  /api/events/status/get:
+    get:
+      tags:
+        - Events
+      summary: 出し物運営状況取得
+      operationId: getEventStatus
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 出し物のID
+      responses:
+        '200':
+          description: 運営状況の取得成功。
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                additionalProperties: false
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - operating
+                      - preparing
+                      - paused
+                      - under-maintenance
+              examples:
+                default:
+                  value:
+                    status: "operating"
+        '404':
+          description: 出し物が存在しない。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Event not found."
+        '501':
+          description: 出し物が運営状況の取得APIに対応していない。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Status tracking is not supported for this event."

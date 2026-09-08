@@ -1,0 +1,81 @@
+openapi: 3.1.0
+info:
+  title: Admin Event Status API
+  description: 出し物の運営状況（ステータス）更新用API（管理者向け）。
+  version: 1.0.0
+paths:
+  /api/events/status/update:
+    put:
+      tags:
+        - AdminEvents
+      summary: 出し物運営状況更新
+      operationId: updateEventStatus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - secret_id
+                - status
+              additionalProperties: false
+              properties:
+                secret_id:
+                  type: string
+                  description: 管理用ID
+                status:
+                  type: string
+                  enum:
+                    - operating
+                    - preparing
+                    - paused
+                    - under-maintenance
+      responses:
+        '200':
+          description: 運営状況の更新成功。
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                additionalProperties: false
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - operating
+                      - preparing
+                      - paused
+                      - under-maintenance
+              examples:
+                default:
+                  value:
+                    status: "operating"
+        '400':
+          description: 不正なリクエスト、または更新処理失敗。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Invalid status value."
+        '404':
+          description: 対象の出し物が存在しない。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Event not found."
