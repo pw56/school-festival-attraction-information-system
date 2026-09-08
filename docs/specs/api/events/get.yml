@@ -45,7 +45,7 @@ paths:
                       type: "vehicles"
                       restrictions: "妊娠中の方は利用をご遠慮ください。"
                       accessibility:
-                        - "車椅子非対応"
+                        - "wheelchair_accessible"
                       available_ticket_slots:
                         timezone: "Asia/Tokyo"
                         rules:
