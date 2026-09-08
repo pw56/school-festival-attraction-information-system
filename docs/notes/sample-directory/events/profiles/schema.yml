@@ -1,20 +1,13 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 $id: "https://info-system.com"
-title: "AttractionData"
+title: "EventData"
 description: "Schema for deployed event information API payload."
 type: "object"
 required:
   - "name"
   - "thumbnail_path"
-  - "description"
-  - "operating_hour_rules"
-  - "duration"
   - "location"
-  - "max_party_size"
   - "type"
-  - "restrictions"
-  - "accessibility"
-  - "available_ticket_slots"
 additionalProperties: false
 properties:
   name:
