@@ -9,7 +9,7 @@ paths:
       tags:
         - Events
       operationId: getEvents
-      
+
       responses:
         '200':
           description: 出し物の配列。
@@ -22,7 +22,7 @@ paths:
                   properties:
                     id:
                       type: string
-                      description: 出し物を一意に識別するID（スラグやUUID）。
+                      description: 出し物を一意に識別するID（UUID）。
                     name:
                       type: string
                       description: 出し物名。
