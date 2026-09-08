@@ -6,6 +6,8 @@
 
 name: "ワクワクコースター"
 
+thumbnail_path: "/events/thumbnails/id.webp"
+
 description: | # JSONでは `\n` で改行
   ポップなスニーカーのコースターに乗って洞窟の中を駆け回る。
   大迫力のイケボが聞こえてくる。
@@ -49,7 +51,7 @@ location:
 
 max_party_size: 2
 
-type: "attraction"
+type: "vehicles"
 
 restrictions: "ご利用になる方は健康状態の良い方に限ります。同伴者の補助によっても安定した姿勢を保てない方はご利用になれません。"
 
