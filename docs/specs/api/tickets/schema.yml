@@ -30,3 +30,6 @@ properties:
         type: "string"
         format: "date-time"
         description: "ISO8601形式の終了時刻。"
+  auth_info:
+    type: "string"
+    description: "認証情報（TOTPのシークレットキーまたはトークン）。"
