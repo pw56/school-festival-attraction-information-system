@@ -1,0 +1,80 @@
+openapi: 3.1.0
+info:
+  title: Admin Events API
+  description: 出し物登録・設定編集用API（管理者向けAPI群）。
+  version: 1.0.0
+paths:
+  /api/events/profiles/create:
+    post:
+      tags:
+        - AdminEvents
+      summary: 出し物新規作成(追加)
+      operationId: createEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                thumbnail_path:
+                  type: string
+                description:
+                  type: string
+                operating_hour_rules:
+                  type: object
+                duration:
+                  type: object
+                location:
+                  type: object
+                max_party_size:
+                  type: integer
+                type:
+                  type: string
+                restrictions:
+                  type: string
+                accessibility:
+                  type: array
+                  items:
+                    type: string
+                available_ticket_slots:
+                  type: object
+      responses:
+        '201':
+          description: 作成したリソース情報。
+          content:
+            application/json:
+              schema:
+                $ref: 'https://example.com/schemas/event.json'
+  /api/events/profiles/update:
+    put:
+      tags:
+        - AdminEvents
+      summary: 出し物更新
+      operationId: updateEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: 更新済みオブジェクト。
+          content:
+            application/json:
+              schema:
+                $ref: 'https://example.com/schemas/event.json'
+  /api/events/profiles/delete:
+    delete:
+      tags:
+        - AdminEvents
+      summary: 出し物削除
+      operationId: deleteEvent
+      responses:
+        '200':
+          description: 削除完了。
+        '204':
+          description: 削除完了 (元から存在しなかった場合)。
