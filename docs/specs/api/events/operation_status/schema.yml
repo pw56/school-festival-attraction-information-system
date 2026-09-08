@@ -1,0 +1,16 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://example.com/schemas/operation_status.json"
+title: "OperationStatus"
+description: "Schema for event operation status API payload."
+type: "object"
+required:
+  - "status"
+additionalProperties: false
+properties:
+  status:
+    type: "string"
+    enum:
+      - "operating"
+      - "preparing"
+      - "paused"
+      - "under-maintenance"

@@ -18,37 +18,19 @@ paths:
               type: object
               required:
                 - secret_id
-                - status
-              additionalProperties: false
               properties:
                 secret_id:
                   type: string
                   description: 管理用ID
-                status:
-                  type: string
-                  enum:
-                    - operating
-                    - preparing
-                    - paused
-                    - under-maintenance
+              allOf:
+                - $ref: 'https://example.com/schemas/operation_status.json'
       responses:
         '200':
           description: 運営状況の更新成功。
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - status
-                additionalProperties: false
-                properties:
-                  status:
-                    type: string
-                    enum:
-                      - operating
-                      - preparing
-                      - paused
-                      - under-maintenance
+                $ref: 'https://example.com/schemas/operation_status.json'
               examples:
                 default:
                   value:

@@ -1,0 +1,20 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://example.com/schemas/crowd_levels.json"
+title: "CrowdLevels"
+description: "Schema for event crowd level API payload."
+type: "object"
+required:
+  - "id"
+  - "crowd_level"
+additionalProperties: false
+properties:
+  id:
+    type: "string"
+  crowd_level:
+    type: "string"
+    enum:
+      - "empty"
+      - "quiet"
+      - "normal"
+      - "busy"
+      - "crowded"

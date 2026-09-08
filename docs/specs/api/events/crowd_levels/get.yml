@@ -23,22 +23,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - id
-                  - crowd_level
-                additionalProperties: false
-                properties:
-                  id:
-                    type: string
-                  crowd_level:
-                    type: string
-                    enum:
-                      - empty
-                      - quiet
-                      - normal
-                      - busy
-                      - crowded
+                $ref: 'https://example.com/schemas/crowd_levels.json'
               examples:
                 default:
                   value:

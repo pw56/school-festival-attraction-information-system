@@ -23,18 +23,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - status
-                additionalProperties: false
-                properties:
-                  status:
-                    type: string
-                    enum:
-                      - operating
-                      - preparing
-                      - paused
-                      - under-maintenance
+                $ref: 'https://example.com/schemas/operation_status.json'
               examples:
                 default:
                   value:
