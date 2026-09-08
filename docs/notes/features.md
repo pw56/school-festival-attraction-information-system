@@ -16,7 +16,7 @@
 ├─ site-info-transmitters # 待ち時間や混雑状況など、現場の状況を自動送信するツールの集まり
 │  └─ queue-wait-time-auto-detector # 待機列の待ち時間の自動検出
 └─ events
-   ├─ profiles # ここにアクセスしたらブラウザでキャッシュ禁止のJSONが変えるので実質API、本当はクエリ文字列で`id`を指定して出し物絞れるようにしたかったがCF Workerの無料枠の都合で断念
+   ├─ profiles # 取得用のここにアクセスしたらブラウザでキャッシュ禁止のJSONが変えるので実質API、本当はクエリ文字列で`id`を指定して出し物絞れるようにしたかったがCF Workerの無料枠の都合で断念
    ├─ thumbnails
    │  └─ id.webp # 実際は出し物の公開IDになる、`profiles`のAPIに、出し物と対応する画像のパスがついている
    └─ wait-times
