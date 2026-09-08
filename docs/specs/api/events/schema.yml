@@ -85,6 +85,19 @@ properties:
     uniqueItems: true
     items:
       type: "string"
+      enum:
+        - "wheelchair_accessible"
+        - "step_free_access"
+        - "accessible_restroom"
+        - "colorblind_friendly"
+        - "braille_pamphlet"
+        - "audio_guide_available"
+        - "subtitled_video"
+        - "script_available"
+        - "writing_board_available"
+        - "visual_instructions"
+        - "assistant_dog_allowed"
+        - "allergy_labels"
   available_ticket_slots:
     $ref: "#/$defs/availableTicketSlots"
 
