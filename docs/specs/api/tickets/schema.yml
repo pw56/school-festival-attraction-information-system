@@ -6,8 +6,7 @@ type: "object"
 required:
   - "ticket_id"
   - "event_id"
-  - "start_time"
-  - "end_time"
+  - "ticket_slot"
 additionalProperties: false
 properties:
   ticket_id:
@@ -16,11 +15,18 @@ properties:
   event_id:
     type: "string"
     description: "対象の出し物ID。"
-  start_time:
-    type: "string"
-    format: "date-time"
-    description: "ISO8601形式の開始時刻。"
-  end_time:
-    type: "string"
-    format: "date-time"
-    description: "ISO8601形式の終了時刻。"
+  ticket_slot:
+    type: "object"
+    required:
+      - "start_time"
+      - "end_time"
+    additionalProperties: false
+    properties:
+      start_time:
+        type: "string"
+        format: "date-time"
+        description: "ISO8601形式の開始時刻。"
+      end_time:
+        type: "string"
+        format: "date-time"
+        description: "ISO8601形式の終了時刻。"
