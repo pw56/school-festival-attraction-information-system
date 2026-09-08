@@ -1,5 +1,5 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
-$id: "https://info-system.com"
+$id: "https://info-system.com/"
 title: "EventData"
 description: "Schema for deployed event information API payload."
 type: "object"

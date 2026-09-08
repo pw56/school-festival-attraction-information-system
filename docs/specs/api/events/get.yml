@@ -18,98 +18,41 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      description: 出し物を一意に識別するID（UUID）。
-                    name:
-                      type: string
-                      description: 出し物名。
-                    thumbnail_path:
-                      type: string
-                      description: サムネイル画像のパス（例: /events/thumbnails/id.webp）。
-                    short_description:
-                      type: string
-                      description: 短い概要。
-                    description:
-                      type: string
-                      description: 詳細説明（HTML またはマークダウンの可能性あり）。
-                    wait_time:
-                      type: [integer, "null"]
-                      description: 現在の待ち時間（分）。存在しない場合は `null`。
-                    map_image_url:
-                      type: [string, "null"]
-                      description: マップ画像のURL（ポップアップ用）。
-                    accessibility:
-                      type: array
-                      description: アクセシビリティ設定の配列。
-                      items:
-                        type: object
-                        properties:
-                          label:
-                            type: string
-                          value:
-                            type: string
-                        required:
-                          - label
-                          - value
-                    other_info:
-                      type: array
-                      description: ラベルとコンテンツの配列。
-                      items:
-                        type: object
-                        properties:
-                          label:
-                            type: string
-                          content:
-                            type: string
-                        required:
-                          - label
-                          - content
-                    has_ticketing:
-                      type: boolean
-                      description: 整理券（チケット）機能の有無。
-                  required:
-                    - id
-                    - name
-                    - thumbnail_path
-                    - short_description
-                    - description
-                    - wait_time
-                    - map_image_url
-                    - accessibility
-                    - other_info
-                    - has_ticketing
+                  $ref: 'https://info-system.com'
               examples:
                 all_events:
                   value:
-                    - id: "exciting_coaster"
-                      name: "エキサイティングコースター"
+                    - name: "エキサイティングコースター"
                       thumbnail_path: "/events/thumbnails/exciting_coaster.webp"
-                      short_description: "絶叫系のコースターです。"
                       description: "強烈な振動と急降下が特徴のコースターです。"
-                      wait_time: 30
-                      map_image_url: "https://.../map.png"
+                      operating_hour_rules:
+                        timezone: "Asia/Tokyo"
+                        rules:
+                          - condition: "default"
+                            operating_hours:
+                              - - "10:00"
+                                - "18:00"
+                      duration:
+                        duration_seconds: 180
+                        is_approximate: false
+                        margin_seconds: 0
+                      location:
+                        lat: 35.681236
+                        lng: 139.767125
+                        floor: 1
+                      max_party_size: 4
+                      type: "vehicles"
+                      restrictions: "妊娠中の方は利用をご遠慮ください。"
                       accessibility:
-                        - label: "車椅子対応"
-                          value: "false"
-                        - label: "身長制限"
-                          value: "120cm以上"
-                      other_info:
-                        - label: "注意事項"
-                          content: "妊娠中の方は利用をご遠慮ください。"
-                      has_ticketing: true
-                    - id: "haunted_house"
-                      name: "お化け屋敷"
-                      thumbnail_path: "/events/thumbnails/haunted_house.webp"
-                      short_description: "暗闇を進むホラー体験。"
-                      description: "暗闇を進むホラー体験。"
-                      wait_time: null
-                      map_image_url: null
-                      accessibility: []
-                      other_info: []
-                      has_ticketing: false
+                        - "車椅子非対応"
+                      available_ticket_slots:
+                        timezone: "Asia/Tokyo"
+                        rules:
+                          - condition: "default"
+                            target_period:
+                              - "10:00"
+                              - "10:30"
+                            remaining_tickets: 15
         '400':
           description: 不正なリクエスト、または出し物情報の取得失敗。
           content:
