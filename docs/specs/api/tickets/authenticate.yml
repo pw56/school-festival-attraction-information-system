@@ -18,11 +18,14 @@ paths:
 
               properties:
                 ticket_id:
+                  $ref: "https://example.com/schemas/ticket.json#/properties/ticket_id"
+                auth_code:
                   type: string
-                  description: 認証対象の整理券ID。
+                  description: 認証に使用する認証コード（TOTPワンタイムコードまたはトークン）。
 
               required:
                 - ticket_id
+                - auth_code
       responses:
         '200':
           description: 認証成功。
