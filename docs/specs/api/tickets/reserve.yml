@@ -17,35 +17,27 @@ paths:
               type: object
 
               properties:
-                attraction_id:
-                  type: string
-                  description: 取得対象の出し物ID。
-                start_time:
-                  type: [string, "null"]
-                  description: （オプション）時間指定がある場合のタイムゾーン付き ISO8601 形式の開始時刻（例: 2026-08-01T15:00:00 09:00）。無ければ `null`。
-                end_time:
-                  type: [string, "null"]
-                  description: （オプション）時間指定がある場合のタイムゾーン付き ISO8601 形式の終了時刻（例: 2026-08-01T15:30:00 09:00）。無ければ `null`。
+                event_id:
+                  $ref: "https://example.com/schemas/ticket.json#/properties/event_id"
+                ticket_slot:
+                  $ref: "https://example.com/schemas/ticket.json#/properties/ticket_slot"
               
               required:
-                - attraction_id
-                - start_time
-                - end_time
+                - event_id
+                - ticket_slot
 
       responses:
 
         '200':
           description: |
             チケットのIDとメッセージ。
-            チケットの情報は別のAPIで取得するので、このAPIでは返さない。
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   ticket_id:
-                    type: string
-                    description: UUID
+                    $ref: "https://example.com/schemas/ticket.json#/properties/ticket_id"
                   message:
                     type: string
                 examples:
