@@ -18,7 +18,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: 'https://info-system.com'
+                  $ref: 'https://example.com/schemas/event.json'
               examples:
                 all_events:
                   value:
