@@ -15,12 +15,12 @@ properties:
     description: "整理券ID。"
   event_id:
     type: "string"
-    description: "取得対象の出し物ID。"
+    description: "対象の出し物ID。"
   start_time:
     type: "string"
     format: "date-time"
-    description: "ISO8601形式の開始時刻。無ければ null。"
+    description: "ISO8601形式の開始時刻。"
   end_time:
     type: "string"
     format: "date-time"
-    description: "ISO8601形式の終了時刻。無ければ null。"
+    description: "ISO8601形式の終了時刻。"
