@@ -1,0 +1,80 @@
+openapi: 3.1.0
+info:
+  title: Wait Times API
+  description: 指定された出し物の待ち時間を取得するAPI。
+  version: 1.0.0
+paths:
+  /api/events/wait-times/get:
+    get:
+      tags:
+        - Events
+      summary: 待ち時間取得
+      operationId: getWaitTime
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 公開ID
+      responses:
+        '200':
+          description: 待ち時間情報。
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - wait_time_minutes
+                additionalProperties: false
+                properties:
+                  id:
+                    type: string
+                  wait_time_minutes:
+                    type: integer
+                    minimum: 0
+              examples:
+                default:
+                  value:
+                    id: "uuid"
+                    wait_time_minutes: 15
+        '400':
+          description: 不正なリクエスト、または待ち時間情報の取得失敗。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Unable to fetch wait time."
+        '404':
+          description: 出し物が存在しない。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Event not found."
+        '501':
+          description: 出し物が待ち時間の取得APIに対応していない。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Wait time tracking is not supported for this event."
