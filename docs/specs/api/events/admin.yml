@@ -15,39 +15,22 @@ paths:
         content:
           application/json:
             schema:
-              type: object
+              allOf:
+                - $ref: 'https://example.com/schemas/event.json'
               properties:
-                name:
-                  type: string
-                thumbnail_path:
-                  type: string
-                description:
-                  type: string
-                operating_hour_rules:
-                  type: object
-                duration:
-                  type: object
-                location:
-                  type: object
-                max_party_size:
-                  type: integer
-                type:
-                  type: string
-                restrictions:
-                  type: string
-                accessibility:
-                  type: array
-                  items:
-                    type: string
-                available_ticket_slots:
-                  type: object
+                id: false
       responses:
         '201':
           description: 作成したリソース情報。
           content:
             application/json:
               schema:
-                $ref: 'https://example.com/schemas/event.json'
+                type: object
+                properties:
+                  secret_id:
+                    type: string
+                  event:
+                    $ref: 'https://example.com/schemas/event.json'
   /api/events/profiles/update:
     put:
       tags:
@@ -60,6 +43,14 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - secret_id
+              properties:
+                secret_id:
+                  type: string
+                  description: 管理用ID
+              allOf:
+                - $ref: 'https://example.com/schemas/event.json'
       responses:
         '200':
           description: 更新済みオブジェクト。
@@ -73,6 +64,13 @@ paths:
         - AdminEvents
       summary: 出し物削除
       operationId: deleteEvent
+      parameters:
+        - name: secret_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 削除対象の管理用ID
       responses:
         '200':
           description: 削除完了。
