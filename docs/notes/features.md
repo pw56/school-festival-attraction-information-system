@@ -20,7 +20,8 @@
    ├─ thumbnails
    │  └─ id.webp # 実際は出し物の公開IDになる、`profiles`のAPIに、出し物と対応する画像のパスがついている
    ├─ status # クエリ文字列で出し物に割り当てられる公開用IDを指定すれば1件だけ取得もできるAPI
-   └─ wait-times # クエリ文字列で出し物に割り当てられる公開用IDを指定すれば1件だけ取得もできるAPI
+   ├─ wait-times # クエリ文字列で出し物に割り当てられる公開用IDを指定すれば1件だけ取得もできるAPI
+   └─ site-info-transmission # 現場の情報を送るAPIのエンドポイント
 ```
 
 ## 備考

@@ -1,0 +1,8 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://example.com/schemas/queue_group_counts.json"
+title: "QueueGroupCounts"
+description: "Schema for queue group counts payload."
+type: "array"
+items:
+  type: "integer"
+  minimum: 0

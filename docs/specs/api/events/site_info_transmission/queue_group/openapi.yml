@@ -1,15 +1,15 @@
 openapi: 3.1.0
 info:
-  title: Crowd Level Transmission API
-  description: 出し物の混雑具合を送信（更新）するAPI。
+  title: Queue Group Transmission API
+  description: 出し物の待機列グループ情報を送信（更新）するAPI。
   version: 1.0.0
 paths:
-  /api/events/site-info-transmission/crowd-levels:
+  /api/events/site-info-transmission/queue-groups:
     post:
       tags:
         - Events
-      summary: 混雑具合情報送信
-      operationId: transmitCrowdLevels
+      summary: 待機列グループ情報送信
+      operationId: transmitQueueGroups
       requestBody:
         required: true
         content:
@@ -18,27 +18,27 @@ paths:
               type: object
               required:
                 - secret_id
-                - crowd_levels
+                - queue_groups
               additionalProperties: false
               properties:
                 secret_id:
                   type: string
                   description: 運営用の出し物ID
-                crowd_levels:
+                queue_groups:
                   type: array
                   items:
                     type: object
                     required:
                       - timestamp
-                      - crowd_level
+                      - group_counts
                     additionalProperties: false
                     properties:
                       timestamp:
                         type: string
                         format: date-time
                         description: 地域を含むISO8601形式のタイムスタンプ
-                      crowd_level:
-                        $ref: 'https://example.com/schemas/crowd_levels.json#/properties/crowd_level'
+                      group_counts:
+                        $ref: '#/$defs/queueGroupCounts'
       responses:
         '200':
           description: 送信完了。
@@ -54,4 +54,12 @@ paths:
               examples:
                 default:
                   value:
-                    message: "Unable to transmit crowd level data."
+                    message: "Unable to transmit queue group data."
+
+$defs:
+  queueGroupCounts:
+    type: array
+    description: 全グループの人数を表す数値の配列
+    items:
+      type: "integer"
+      minimum: 0
