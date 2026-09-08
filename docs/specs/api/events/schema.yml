@@ -1,6 +1,6 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 $id: "https://example.com/schemas/event.json"
-title: "EventData"
+title: "Event"
 description: "Schema for deployed event information API payload."
 type: "object"
 required:
