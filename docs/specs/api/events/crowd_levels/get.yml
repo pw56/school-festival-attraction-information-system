@@ -1,0 +1,85 @@
+openapi: 3.1.0
+info:
+  title: Crowd Levels API
+  description: 指定された出し物の混雑具合を取得するAPI。
+  version: 1.0.0
+paths:
+  /api/events/crowd-levels/get:
+    get:
+      tags:
+        - Events
+      summary: 混雑具合取得
+      operationId: getCrowdLevel
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 公開ID
+      responses:
+        '200':
+          description: 混雑具合情報。
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - crowd_level
+                additionalProperties: false
+                properties:
+                  id:
+                    type: string
+                  crowd_level:
+                    type: string
+                    enum:
+                      - empty
+                      - quiet
+                      - normal
+                      - busy
+                      - crowded
+              examples:
+                default:
+                  value:
+                    id: "uuid"
+                    crowd_level: "normal"
+        '400':
+          description: 不正なリクエスト、または混雑具合情報の取得失敗。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Unable to fetch crowd level."
+        '404':
+          description: 出し物が存在しない。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Event not found."
+        '501':
+          description: 出し物が混雑具合の取得APIに対応していない。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Crowd level tracking is not supported for this event."
