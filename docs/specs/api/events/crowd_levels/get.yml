@@ -4,7 +4,7 @@ info:
   description: 指定された出し物の混雑具合を取得するAPI。
   version: 1.0.0
 paths:
-  /api/events/crowd-levels/get:
+  /api/events/crowd-levels:
     get:
       tags:
         - Events
