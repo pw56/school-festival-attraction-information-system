@@ -1,13 +1,13 @@
 openapi: 3.1.0
 info:
-  title: Admin System Settings API
+  title: System Settings API
   description: システム全体（文化祭全体）の設定を取得・更新するAPI（管理者向けAPI群）。
   version: 1.0.0
 paths:
-  /api/admin/settings:
+  /api/system-settings:
     get:
       tags:
-        - AdminSettings
+        - SystemSettings
       summary: システム全体設定の取得
       operationId: getSystemSettings
       responses:
@@ -45,7 +45,7 @@ paths:
                     message: "Unable to fetch system settings."
     put:
       tags:
-        - AdminSettings
+        - SystemSettings
       summary: システム全体設定の更新
       operationId: updateSystemSettings
       requestBody:
