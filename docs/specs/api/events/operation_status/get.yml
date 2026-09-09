@@ -4,7 +4,7 @@ info:
   description: 指定された出し物の運営状況（ステータス）を取得するAPI。
   version: 1.0.0
 paths:
-  /api/events/status:
+  /api/events/operation-status:
     get:
       tags:
         - Events

@@ -1,0 +1,77 @@
+openapi: 3.1.0
+info:
+  title: System Settings API
+  description: システム全体（文化祭全体）の設定を取得・更新するAPI（管理者向けAPI群）。
+  version: 1.0.0
+paths:
+  /api/system-settings:
+    get:
+      tags:
+        - SystemSettings
+      summary: システム全体設定の取得
+      operationId: getSystemSettings
+      responses:
+        '200':
+          description: システム全体の設定情報。
+          content:
+            application/json:
+              schema:
+                $ref: 'https://example.com/schemas/system_settings.json'
+              examples:
+                default:
+                  value:
+                    location_restriction:
+                      enabled: true
+                      session_timeout_minutes: 30
+                      allowed_radius_meters: 100.0
+                    operating_hours:
+                      start_time: "2026-09-20T09:00:00 09:00"
+                      end_time: "2026-09-20T17:00:00 09:00"
+                    restrict_access_to_operating_hours: true
+                    allowed_ticket_delay_minutes: 15
+                    prevent_duplicate_event_reservations_before_use: true
+                    bot_protection_enabled: true
+        '400':
+          description: 設定情報の取得失敗。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Unable to fetch system settings."
+    put:
+      tags:
+        - SystemSettings
+      summary: システム全体設定の更新
+      operationId: updateSystemSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'https://example.com/schemas/system_settings.json'
+      responses:
+        '200':
+          description: 更新後のシステム全体設定情報。
+          content:
+            application/json:
+              schema:
+                $ref: 'https://example.com/schemas/system_settings.json'
+        '400':
+          description: 不正なリクエスト、または更新失敗。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Invalid settings or update failed."

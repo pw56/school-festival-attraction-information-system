@@ -1,0 +1,12 @@
+openapi: 3.1.0
+info:
+  title: Map API
+  version: 1.0.0
+  description: マップの取得および更新API
+
+paths:
+  /maps:
+    get:
+      $ref: './get.yml'
+    put:
+      $ref: './update.yml'

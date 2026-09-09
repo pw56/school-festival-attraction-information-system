@@ -1,0 +1,22 @@
+openapi: 3.1.0
+info:
+  title: Tickets API
+  version: 1.0.0
+  description: チケットの予約、認証、譲渡に関するAPI
+
+paths:
+  /tickets/reserve:
+    post:
+      $ref: './reserve.yml'
+
+  /tickets/cancel:
+    post:
+      $ref: './cancel.yml'
+
+  /tickets/authenticate:
+    post:
+      $ref: './authenticate.yml'
+
+  /tickets/transfer:
+    post:
+      $ref: './transfer.yml'

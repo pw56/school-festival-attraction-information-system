@@ -1,0 +1,30 @@
+openapi: 3.1.0
+info:
+  title: Events API
+  version: 1.0.0
+  description: 出し物に関するAPI
+
+paths:
+  /events/crowd-levels:
+    get:
+      $ref: './crowd_levels/get.yml'
+
+  /events/operation-status:
+    get:
+      $ref: './operation_status/get.yml'
+    put:
+      $ref: './operation_status/update.yml'
+
+  /events/profiles:
+    get:
+      $ref: './profiles/get.yml'
+
+  /events/wait-times:
+    get:
+      $ref: './wait_times/get.yml'
+
+  /events/site-info-transmission/crowd-level:
+    $ref: './site_info_transmission/crowd_level.yml'
+
+  /events/site-info-transmission/queue-group:
+    $ref: './site_info_transmission/queue_group/openapi.yml'
