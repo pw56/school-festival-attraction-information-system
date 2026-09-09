@@ -1,0 +1,37 @@
+openapi: 3.1.0
+info:
+  title: Admin Event ID Mapping API
+  description: 出し物の公開用IDと管理用secret_idの対応情報を取得するAPI（運営向けAPI群）。
+  version: 1.0.0
+paths:
+  /api/events/mappings:
+    get:
+      tags:
+        - Events
+      summary: 出し物IDマッピング情報の取得
+      operationId: getEventIdMappings
+      responses:
+        '200':
+          description: 公開用IDとsecret_idの対マップ。
+          content:
+            application/json:
+              schema:
+                $ref: 'https://example.com/schemas/event_id_mapping.json'
+              examples:
+                default:
+                  value:
+                    "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11": "sec_8f7b2c1a"
+                    "b1ffcd00-1d2e-3f4g-5h6i-7jj8kk99ll00": "sec_3d4e5f6g"
+        '400':
+          description: マッピング情報の取得失敗。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                default:
+                  value:
+                    message: "Unable to fetch event ID mappings."
