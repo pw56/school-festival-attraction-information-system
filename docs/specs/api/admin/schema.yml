@@ -1,0 +1,66 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://example.com/schemas/system_settings.json"
+title: "SystemSettings"
+description: "システム全体（文化祭全体）の設定スキーマ。"
+type: "object"
+required:
+  - "location_restriction"
+  - "operating_hours"
+  - "restrict_access_to_operating_hours"
+  - "allowed_ticket_delay_minutes"
+  - "bot_protection_enabled"
+additionalProperties: false
+properties:
+  location_restriction:
+    type: "object"
+    description: "敷地内アクセス制限に関する設定。"
+    required:
+      - "enabled"
+    additionalProperties: false
+    properties:
+      enabled:
+        type: "boolean"
+        description: "敷地内アクセスに限定するかどうか。"
+      session_timeout_minutes:
+        type: "integer"
+        minimum: 0
+        description: "最後にアクセスが確認されてからアクセスを許可する時間（1分単位、0以上）。"
+      allowed_radius_meters:
+        type: "number"
+        minimum: 0
+        description: "敷地内と判定する半径（m単位）。"
+    allOf:
+      - if:
+          properties:
+            enabled:
+              const: true
+        then:
+          required:
+            - "session_timeout_minutes"
+            - "allowed_radius_meters"
+  operating_hours:
+    type: "object"
+    description: "文化祭全体の開催時間。"
+    required:
+      - "start_time"
+      - "end_time"
+    additionalProperties: false
+    properties:
+      start_time:
+        type: "string"
+        format: "date-time"
+        description: "ISO8601形式の開始時刻。"
+      end_time:
+        type: "string"
+        format: "date-time"
+        description: "ISO8601形式の終了時刻。"
+  restrict_access_to_operating_hours:
+    type: "boolean"
+    description: "開催時間内のアクセスに限定するかどうか。"
+  allowed_ticket_delay_minutes:
+    type: "integer"
+    minimum: 0
+    description: "整理券の遅延を何分まで許容するか（1分単位、0以上）。"
+  bot_protection_enabled:
+    type: "boolean"
+    description: "ボット対策を有効化するかどうか。"
