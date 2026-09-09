@@ -6,7 +6,6 @@ type: "object"
 required:
   - "id"
   - "name"
-  - "thumbnail_path"
   - "location"
   - "type"
 additionalProperties: false

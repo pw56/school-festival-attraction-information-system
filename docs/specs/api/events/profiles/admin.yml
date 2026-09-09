@@ -13,12 +13,23 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
+              type: object
+              required:
+                - thumbnail_data
               allOf:
                 - $ref: 'https://example.com/schemas/event.json'
               properties:
                 id: false
+                thumbnail_path: false
+                thumbnail_data:
+                  type: string
+                  format: binary
+                  description: サムネイル画像データ（WebP または AVIF）
+            encoding:
+              thumbnail_data:
+                contentType: image/webp, image/avif
       responses:
         '201':
           description: 作成したリソース情報。
@@ -39,17 +50,26 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               required:
                 - secret_id
+                - thumbnail_data
               properties:
                 secret_id:
                   type: string
                   description: 管理用ID
+                thumbnail_path: false
+                thumbnail_data:
+                  type: string
+                  format: binary
+                  description: サムネイル画像データ（WebP または AVIF）
               allOf:
                 - $ref: 'https://example.com/schemas/event.json'
+            encoding:
+              thumbnail_data:
+                contentType: image/webp, image/avif
       responses:
         '200':
           description: 更新済みオブジェクト。
