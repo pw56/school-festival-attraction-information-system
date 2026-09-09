@@ -4,7 +4,7 @@ info:
   description: 出し物の運営状況（ステータス）更新用API（管理者向け）。
   version: 1.0.0
 paths:
-  /api/events/status/update:
+  /api/events/status:
     put:
       tags:
         - AdminEvents

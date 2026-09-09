@@ -4,7 +4,7 @@ info:
   description: 指定された出し物の待ち時間を取得するAPI。
   version: 1.0.0
 paths:
-  /api/events/wait-times/get:
+  /api/events/wait-times:
     get:
       tags:
         - Events
