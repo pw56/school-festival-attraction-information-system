@@ -1,8 +1,9 @@
-openapi: 3.1.0
-info:
-  title: Crowd Level Transmission API
-  description: 出し物の混雑具合を送信（更新）するAPI。
-  version: 1.0.0
+# openapi: 3.1.0
+# info:
+#   title: Crowd Level Transmission API
+#   description: 出し物の混雑具合を送信（更新）するAPI。
+#   version: 1.0.0
+
 paths:
   /api/events/site-info-transmission/crowd-level:
     post:

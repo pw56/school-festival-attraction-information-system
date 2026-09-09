@@ -1,8 +1,9 @@
-openapi: 3.1.0
-info:
-  title: get
-  description: 公開されている出し物（アトラクション）の一覧を取得するAPI。
-  version: 1.0.0
+# openapi: 3.1.0
+# info:
+#   title: get
+#   description: 公開されている出し物（アトラクション）の一覧を取得するAPI。
+#   version: 1.0.0
+
 paths:
   /api/events/profiles:
     get:

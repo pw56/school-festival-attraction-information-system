@@ -1,8 +1,9 @@
-openapi: 3.1.0
-info:
-  title: Crowd Levels API
-  description: 指定された出し物の混雑具合を取得するAPI。
-  version: 1.0.0
+# openapi: 3.1.0
+# info:
+#   title: Crowd Levels API
+#   description: 指定された出し物の混雑具合を取得するAPI。
+#   version: 1.0.0
+
 paths:
   /api/events/crowd-levels:
     get:
