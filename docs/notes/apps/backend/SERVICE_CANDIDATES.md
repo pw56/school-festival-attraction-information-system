@@ -10,8 +10,8 @@
 - 待機列の待ち時間: Cloudflare Workers + Cloudflare D1
   ※ KVは遅い、R2はDB機能がなく、ログのダウンロードが大変なのでD1を採択
 
-※ Honoで開発すれば、ローカルのPCでも
+※ Hono、Terraform、ORM(Drizzle ORMが最有力)で開発すれば、ローカルのPCでも
   - Cloudflare Tunnels
   - Nginx
   - Node.js
-  の構成で動かせる
+  の構成で動かせる(ベンダーロックインがない)
