@@ -1,0 +1,11 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://example.com/schemas/ticket_transfer_data.yml"
+title: "TicketTransferData"
+description: "整理券のP2P転送用QRコードの中身となるJSONスキーマ。"
+type: "object"
+required:
+  - "ticket"
+additionalProperties: false
+properties:
+  ticket:
+    $ref: "https://example.com/schemas/ticket.json"
