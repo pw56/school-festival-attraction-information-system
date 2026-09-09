@@ -8,6 +8,7 @@ required:
   - "operating_hours"
   - "restrict_access_to_operating_hours"
   - "allowed_ticket_delay_minutes"
+  - "prevent_duplicate_event_reservations_before_use"
   - "bot_protection_enabled"
 additionalProperties: false
 properties:
@@ -61,6 +62,9 @@ properties:
     type: "integer"
     minimum: 0
     description: "整理券の遅延を何分まで許容するか（1分単位、0以上）。"
+  prevent_duplicate_event_reservations_before_use:
+    type: "boolean"
+    description: "整理券を使用する前に同じ出し物の複数回の予約を禁止するかどうか。"
   bot_protection_enabled:
     type: "boolean"
     description: "ボット対策を有効化するかどうか。"

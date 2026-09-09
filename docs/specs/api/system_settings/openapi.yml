@@ -29,6 +29,7 @@ paths:
                       end_time: "2026-09-20T17:00:00 09:00"
                     restrict_access_to_operating_hours: true
                     allowed_ticket_delay_minutes: 15
+                    prevent_duplicate_event_reservations_before_use: true
                     bot_protection_enabled: true
         '400':
           description: 設定情報の取得失敗。
