@@ -10,6 +10,7 @@ required:
   - "allowed_ticket_delay_minutes"
   - "prevent_duplicate_event_reservations_before_use"
   - "bot_protection_enabled"
+  - "supported_languages"
 additionalProperties: false
 properties:
   location_restriction:
@@ -68,3 +69,8 @@ properties:
   bot_protection_enabled:
     type: "boolean"
     description: "ボット対策を有効化するかどうか。"
+  supported_languages:
+    type: "array"
+    description: "アプリで表示を許可する言語コードのリスト。"
+    items:
+      type: "string"
