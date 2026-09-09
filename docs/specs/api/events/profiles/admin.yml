@@ -4,7 +4,7 @@ info:
   description: 出し物登録・設定編集用API（管理者向けAPI群）。
   version: 1.0.0
 paths:
-  /api/events/profiles/create:
+  /api/events/profiles:
     post:
       tags:
         - AdminEvents
@@ -31,7 +31,6 @@ paths:
                     type: string
                   event:
                     $ref: 'https://example.com/schemas/event.json'
-  /api/events/profiles/update:
     put:
       tags:
         - AdminEvents
@@ -58,7 +57,6 @@ paths:
             application/json:
               schema:
                 $ref: 'https://example.com/schemas/event.json'
-  /api/events/profiles/delete:
     delete:
       tags:
         - AdminEvents

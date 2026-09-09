@@ -4,7 +4,7 @@ info:
   description: 公開されている出し物（アトラクション）の一覧を取得するAPI。
   version: 1.0.0
 paths:
-  /api/events/profiles/get:
+  /api/events/profiles:
     get:
       tags:
         - Events
