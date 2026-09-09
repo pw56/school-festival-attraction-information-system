@@ -1,0 +1,51 @@
+openapi: 3.1.0
+info:
+  title: transfer
+  description: 整理券の譲渡時にFCMトークンを更新するAPI。
+  version: 1.0.0
+paths:
+  /api/tickets/transfer:
+    post:
+      tags:
+        - Tickets
+      operationId: transferTicket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+
+              properties:
+                ticket_id:
+                  $ref: "https://example.com/schemas/ticket.json#/properties/ticket_id"
+                fcmToken:
+                  type: string
+                  description: プッシュ通知に使用されるFCMトークン。
+
+              required:
+                - ticket_id
+                - fcmToken
+      responses:
+        '200':
+          description: 譲渡成功。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                examples:
+                  - message: "Ticket transferred successfully."
+        '400':
+          description: チケットが存在しないか、不正なリクエストの場合。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                examples:
+                  - message: "Ticket not found or invalid request."

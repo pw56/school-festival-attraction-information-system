@@ -23,6 +23,9 @@ paths:
                   $ref: "https://example.com/schemas/ticket.json#/properties/ticket_slot"
                 auth_type:
                   $ref: "https://example.com/schemas/ticket.json#/properties/auth_type"
+                fcmToken:
+                  type: string
+                  description: プッシュ通知に使用されるFCMトークン。
               
               required:
                 - event_id
