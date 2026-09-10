@@ -5,7 +5,14 @@ info:
   description: ログに関するAPI
 
 paths:
-  /api/logs/:
+  /api/logs/queue-group:
     get:
-      $ref: './crowd_levels/get.yml'
+      $ref: './queue_group.yml'
 
+  /api/logs/wait-times:
+    get:
+      $ref: './wait_times.yml'
+
+  /api/logs/ticket-usages:
+    get:
+      $ref: './ticket_usages.yml'
