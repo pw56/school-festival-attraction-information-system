@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import QrScanner from 'qr-scanner';
 
 interface QrScannerModalProps {
@@ -25,7 +25,6 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
 
     const startCamera = async () => {
       try {
-        // 高解像度および外カメラ優先のカメラ設定
         const stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: { ideal: 'environment' },
@@ -44,11 +43,9 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
 
-          // QrScannerのインスタンス化
           const qrScanner = new QrScanner(
             videoRef.current,
             (result) => {
-              // 読み取り成功時の処理
               stopScannerTracks();
               onScanSuccess(result.data);
             },
@@ -77,7 +74,6 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
     };
   }, [isOpen]);
 
-  // 高速切り替えのため track.enabled を用いてコントロールしつつクリーンアップ
   const stopScannerTracks = () => {
     if (qrScannerRef.current) {
       qrScannerRef.current.stop();
@@ -97,117 +93,41 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div style={styles.modalOverlay}>
-      <div style={styles.modalContent}>
-        <h3 style={{ margin: '0 0 12px 0', textAlign: 'center' }}>{title}</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4">
+      <div className="flex w-full max-w-md flex-col rounded-xl bg-white p-5 shadow-xl">
+        <h3 className="mb-3 text-center text-lg font-bold text-gray-800">{title}</h3>
 
         {/* カメラ表示エリア */}
-        <div style={styles.cameraContainer}>
-          <video ref={videoRef} style={styles.video} playsInline muted />
+        <div className="relative h-80 w-full overflow-hidden rounded-lg bg-black">
+          <video
+            ref={videoRef}
+            className="h-full w-full object-contain"
+            playsInline
+            muted
+          />
 
-          {/* QRスキャン用オーバーレイ */}
-          <div style={styles.scanOverlay}>
-            <div style={styles.overlayTop} />
-            <div style={styles.overlayMiddle}>
-              <div style={styles.overlayLeft} />
-              <div style={styles.scanTargetBox} />
-              <div style={styles.overlayRight} />
+          {/* スキャン枠オーバーレイ */}
+          <div className="pointer-events-none absolute inset-0 flex flex-col">
+            <div className="flex-1 bg-black/50" />
+            <div className="flex h-56">
+              <div className="flex-1 bg-black/50" />
+              <div className="h-56 w-56 border-4 border-blue-500 bg-transparent" />
+              <div className="flex-1 bg-black/50" />
             </div>
-            <div style={styles.overlayBottom} />
+            <div className="flex-1 bg-black/50" />
           </div>
         </div>
 
-        <div style={{ marginTop: '16px', textAlign: 'center' }}>
-          <button style={styles.cancelButton} onClick={onCancel}>
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-lg bg-gray-200 px-5 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-300 active:bg-gray-400"
+          >
             読み取りをキャンセル
           </button>
         </div>
       </div>
     </div>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  modalOverlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 9999,
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: '12px',
-    padding: '20px',
-    width: '90%',
-    maxWidth: '500px',
-    boxSizing: 'border-box',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  cameraContainer: {
-    position: 'relative',
-    width: '100%',
-    height: '350px',
-    backgroundColor: '#000',
-    overflow: 'hidden',
-    borderRadius: '8px',
-  },
-  video: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'contain',
-  },
-  scanOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    pointerEvents: 'none',
-  },
-  overlayTop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  overlayMiddle: {
-    display: 'flex',
-    height: '220px',
-  },
-  overlayLeft: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  scanTargetBox: {
-    width: '220px',
-    height: '220px',
-    border: '3px solid #228BE6',
-    boxSizing: 'border-box',
-    backgroundColor: 'transparent',
-  },
-  overlayRight: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  overlayBottom: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  cancelButton: {
-    padding: '10px 20px',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    backgroundColor: '#e0e0e0',
-    color: '#333',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-  },
 };

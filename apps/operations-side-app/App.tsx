@@ -11,7 +11,7 @@ interface AppProps {
   sdkClient: SdkClient;
 }
 
-export const App: React.FC<AppProps> = ({ sdkClient }) => {
+const App: React.FC<AppProps> = ({ sdkClient }) => {
   const [activeTab, setActiveTab] = useState<TabType>('tickets');
   const [secretId, setSecretId] = useState<string | null>(null);
   const [pendingTab, setPendingTab] = useState<TabType | null>(null);
@@ -45,7 +45,9 @@ export const App: React.FC<AppProps> = ({ sdkClient }) => {
       }
 
       const response = await sdkClient.events.getEvents();
-      const targetEvent = response.data.find((e) => e.id === parsed.id || e.id === extractedSecretId);
+      const targetEvent = response.data.find(
+        (e) => e.id === parsed.id || e.id === extractedSecretId
+      );
 
       setSecretId(extractedSecretId);
       if (targetEvent) {
@@ -71,40 +73,46 @@ export const App: React.FC<AppProps> = ({ sdkClient }) => {
   };
 
   return (
-    <div style={styles.container}>
-      {/* タブナビゲーション */}
-      <nav style={styles.tabNav}>
+    <div className="mx-auto min-h-screen max-w-3xl bg-white font-sans text-gray-900 shadow-sm">
+      {/* タブヘッダー */}
+      <nav className="flex border-b border-gray-200 bg-gray-50">
         <button
-          style={{
-            ...styles.tabButton,
-            ...(activeTab === 'tickets' ? styles.activeTab : {}),
-          }}
+          type="button"
           onClick={() => handleTabClick('tickets')}
+          className={`flex-1 border-b-2 py-3 px-2 text-center text-sm font-bold transition ${
+            activeTab === 'tickets'
+              ? 'border-blue-600 bg-white text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
         >
           整理券の認証
         </button>
         <button
-          style={{
-            ...styles.tabButton,
-            ...(activeTab === 'info' ? styles.activeTab : {}),
-          }}
+          type="button"
           onClick={() => handleTabClick('info')}
+          className={`flex-1 border-b-2 py-3 px-2 text-center text-sm font-bold transition ${
+            activeTab === 'info'
+              ? 'border-blue-600 bg-white text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
         >
           出し物の情報の設定
         </button>
         <button
-          style={{
-            ...styles.tabButton,
-            ...(activeTab === 'status' ? styles.activeTab : {}),
-          }}
+          type="button"
           onClick={() => handleTabClick('status')}
+          className={`flex-1 border-b-2 py-3 px-2 text-center text-sm font-bold transition ${
+            activeTab === 'status'
+              ? 'border-blue-600 bg-white text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
         >
           出し物の運営状況の編集
         </button>
       </nav>
 
-      {/* タブコンテンツ */}
-      <main style={styles.content}>
+      {/* コンテンツ表示エリア */}
+      <main className="p-2">
         {activeTab === 'tickets' && <TicketScanner sdkClient={sdkClient} />}
 
         {activeTab === 'info' && secretId && eventData && (
@@ -121,7 +129,7 @@ export const App: React.FC<AppProps> = ({ sdkClient }) => {
         )}
       </main>
 
-      {/* タブ切り替え用認証QRスキャナ */}
+      {/* 認証用 QRコードスキャナ */}
       <QrScannerModal
         isOpen={isAuthenticating}
         onScanSuccess={handleAuthQrScanSuccess}
@@ -135,36 +143,4 @@ export const App: React.FC<AppProps> = ({ sdkClient }) => {
   );
 };
 
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    fontFamily: 'sans-serif',
-    maxWidth: '800px',
-    margin: '0 auto',
-    boxSizing: 'border-box',
-  },
-  tabNav: {
-    display: 'flex',
-    borderBottom: '2px solid #e0e0e0',
-    backgroundColor: '#f8f9fa',
-  },
-  tabButton: {
-    flex: 1,
-    padding: '14px 8px',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    border: 'none',
-    backgroundColor: 'transparent',
-    cursor: 'pointer',
-    color: '#666',
-    borderBottom: '3px solid transparent',
-    transition: 'all 0.2s',
-  },
-  activeTab: {
-    color: '#228BE6',
-    borderBottom: '3px solid #228BE6',
-    backgroundColor: '#fff',
-  },
-  content: {
-    paddingTop: '20px',
-  },
-};
+export default App;

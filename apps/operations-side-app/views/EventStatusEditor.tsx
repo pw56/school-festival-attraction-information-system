@@ -9,10 +9,10 @@ interface EventStatusEditorProps {
 }
 
 const STATUS_OPTIONS: { key: OperationStatus; label: string }[] = [
-  { key: 'operating', label: '運営中 (operating)' },
-  { key: 'preparing', label: '準備中 (preparing)' },
-  { key: 'paused', label: '休止中 (paused)' },
-  { key: 'under-maintenance', label: '点検中 (under-maintenance)' },
+  { key: 'operating', label: '運営中' },
+  { key: 'preparing', label: '準備中' },
+  { key: 'paused', label: '休止中' },
+  { key: 'under-maintenance', label: '点検中' },
 ];
 
 export const EventStatusEditor: React.FC<EventStatusEditorProps> = ({
@@ -32,7 +32,8 @@ export const EventStatusEditor: React.FC<EventStatusEditorProps> = ({
         status: status,
       });
 
-      alert(`運営状況を「${STATUS_OPTIONS.find((s) => s.key === status)?.label}」に更新しました。`);
+      const label = STATUS_OPTIONS.find((s) => s.key === status)?.label;
+      alert(`運営状況を「${label}」に更新しました。`);
       if (onStatusUpdated) {
         onStatusUpdated(status);
       }
@@ -49,23 +50,17 @@ export const EventStatusEditor: React.FC<EventStatusEditorProps> = ({
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '500px', margin: '0 auto' }}>
-      <h2>出し物の運営状況の編集</h2>
+    <div className="mx-auto max-w-md p-6">
+      <h2 className="mb-6 text-2xl font-bold text-gray-800">出し物の運営状況の編集</h2>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
-          現在のステータス
+      <div className="mb-6">
+        <label className="mb-2 block text-sm font-semibold text-gray-700">
+          ステータス選択
         </label>
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value as OperationStatus)}
-          style={{
-            width: '100%',
-            padding: '10px',
-            fontSize: '16px',
-            borderRadius: '6px',
-            border: '1px solid #ccc',
-          }}
+          className="w-full rounded-lg border border-gray-300 p-3 text-base text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           {STATUS_OPTIONS.map((opt) => (
             <option key={opt.key} value={opt.key}>
@@ -76,19 +71,14 @@ export const EventStatusEditor: React.FC<EventStatusEditorProps> = ({
       </div>
 
       <button
+        type="button"
         onClick={handleUpdate}
         disabled={isUpdating}
-        style={{
-          width: '100%',
-          padding: '12px',
-          fontSize: '16px',
-          fontWeight: 'bold',
-          backgroundColor: isUpdating ? '#ccc' : '#228BE6',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '6px',
-          cursor: isUpdating ? 'not-allowed' : 'pointer',
-        }}
+        className={`w-full rounded-lg py-3 text-base font-bold text-white shadow transition ${
+          isUpdating
+            ? 'cursor-not-allowed bg-gray-400'
+            : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
+        }`}
       >
         {isUpdating ? '更新中...' : '確定して送信'}
       </button>

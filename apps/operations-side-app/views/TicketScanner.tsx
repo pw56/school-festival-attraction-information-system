@@ -9,7 +9,6 @@ interface TicketScannerProps {
 export const TicketScanner: React.FC<TicketScannerProps> = ({ sdkClient }) => {
   const [isScanning, setIsScanning] = useState(false);
 
-  // 音声ファイルの参照
   const successAudioRef = useRef<HTMLAudioElement | null>(
     new Audio('/successful.mp3')
   );
@@ -42,7 +41,6 @@ export const TicketScanner: React.FC<TicketScannerProps> = ({ sdkClient }) => {
       return;
     }
 
-    // 例: 整理券データの検証とAPI呼び出し
     if (!parsedPayload || typeof parsedPayload !== 'object' || !parsedPayload.ticket_id) {
       playAudio('failed');
       alert('エラー: 無効な整理券データです (必要な識別子が含まれていません)。');
@@ -50,7 +48,6 @@ export const TicketScanner: React.FC<TicketScannerProps> = ({ sdkClient }) => {
     }
 
     try {
-      // 整理券検証 API をコール
       await sdkClient.tickets.verifyTicket({
         ticket_id: parsedPayload.ticket_id,
         secret_id: parsedPayload.secret_id,
@@ -69,22 +66,16 @@ export const TicketScanner: React.FC<TicketScannerProps> = ({ sdkClient }) => {
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-      <h2>整理券の認証</h2>
-      <p>「整理券を読み取る」ボタンを押して、カメラでQRコードをかざしてください。</p>
+    <div className="mx-auto max-w-xl p-6">
+      <h2 className="mb-2 text-2xl font-bold text-gray-800">整理券の認証</h2>
+      <p className="mb-6 text-gray-600">
+        「整理券を読み取る」ボタンを押して、カメラでQRコードをかざしてください。
+      </p>
 
       <button
+        type="button"
         onClick={() => setIsScanning(true)}
-        style={{
-          padding: '12px 24px',
-          fontSize: '16px',
-          fontWeight: 'bold',
-          backgroundColor: '#228BE6',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '8px',
-          cursor: 'pointer',
-        }}
+        className="w-full rounded-lg bg-blue-600 py-3 text-base font-bold text-white shadow-md transition hover:bg-blue-700 active:bg-blue-800 sm:w-auto sm:px-6"
       >
         整理券を読み取る
       </button>

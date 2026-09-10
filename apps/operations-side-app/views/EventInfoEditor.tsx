@@ -23,6 +23,12 @@ const EVENT_TYPES = [
   { key: 'stage', label: 'ステージ' },
   { key: 'rest_area', label: '休憩所' },
   { key: 'information_desk', label: '案内所' },
+  { key: 'restrooms', label: 'トイレ' },
+  { key: 'stairs', label: '階段' },
+  { key: 'elevator', label: 'エレベーター' },
+  { key: 'first_aid_room', label: '救護室' },
+  { key: 'parking_lot', label: '駐車場' },
+  { key: 'others', label: 'その他' },
 ];
 
 const ACCESSIBILITY_OPTIONS = [
@@ -50,10 +56,7 @@ export const EventInfoEditor: React.FC<EventInfoEditorProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInputChange = (
-    key: keyof Event,
-    value: any
-  ) => {
+  const handleInputChange = (key: keyof Event, value: any) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -87,10 +90,8 @@ export const EventInfoEditor: React.FC<EventInfoEditorProps> = ({
 
     setIsSubmitting(true);
     try {
-      // 1. サムネイル画像の中央クロップ・リサイズ・WebP(50%)変換
       const processedBlob = await processThumbnailImage(selectedFile);
 
-      // 2. updateEvent API コール
       const response = await sdkClient.adminEvents.updateEvent({
         secret_id: secretId,
         thumbnail_data: processedBlob,
@@ -112,36 +113,36 @@ export const EventInfoEditor: React.FC<EventInfoEditorProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} style={styles.form}>
-      <h2>出し物の情報の設定</h2>
+    <form onSubmit={handleSubmit} className="mx-auto max-w-xl space-y-6 p-6">
+      <h2 className="text-2xl font-bold text-gray-800">出し物の情報の設定</h2>
 
-      <div style={styles.field}>
-        <label style={styles.label}>出し物名</label>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-gray-700">出し物名</label>
         <input
           type="text"
           value={formData.name || ''}
           onChange={(e) => handleInputChange('name', e.target.value)}
           required
-          style={styles.input}
+          className="rounded-lg border border-gray-300 p-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
       </div>
 
-      <div style={styles.field}>
-        <label style={styles.label}>説明</label>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-gray-700">説明</label>
         <textarea
           value={formData.description || ''}
           onChange={(e) => handleInputChange('description', e.target.value)}
           rows={4}
-          style={styles.textarea}
+          className="rounded-lg border border-gray-300 p-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
       </div>
 
-      <div style={styles.field}>
-        <label style={styles.label}>出し物の種類 (Type)</label>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-gray-700">出し物の種類</label>
         <select
           value={formData.type || ''}
           onChange={(e) => handleInputChange('type', e.target.value)}
-          style={styles.select}
+          className="rounded-lg border border-gray-300 p-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           {EVENT_TYPES.map((t) => (
             <option key={t.key} value={t.key}>
@@ -151,8 +152,10 @@ export const EventInfoEditor: React.FC<EventInfoEditorProps> = ({
         </select>
       </div>
 
-      <div style={styles.field}>
-        <label style={styles.label}>サムネイル画像 (自動WebP変換・中央クロップ)</label>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-gray-700">
+          サムネイル画像 (WebP自動変換 / 中央クロップ)
+        </label>
         <input
           type="file"
           accept="image/*"
@@ -162,76 +165,80 @@ export const EventInfoEditor: React.FC<EventInfoEditorProps> = ({
             }
           }}
           required
+          className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
         />
       </div>
 
-      <div style={styles.field}>
-        <label style={styles.label}>位置情報</label>
-        <div style={{ display: 'flex', gap: '10px' }}>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-gray-700">位置情報</label>
+        <div className="grid grid-cols-3 gap-3">
           <div>
-            緯度:
+            <span className="text-xs text-gray-500">緯度</span>
             <input
               type="number"
               step="any"
               value={formData.location?.lat ?? 0}
               onChange={(e) => handleLocationChange('lat', parseFloat(e.target.value))}
-              style={styles.inputNum}
+              className="w-full rounded-lg border border-gray-300 p-2 text-sm focus:border-blue-500 focus:outline-none"
             />
           </div>
           <div>
-            経度:
+            <span className="text-xs text-gray-500">経度</span>
             <input
               type="number"
               step="any"
               value={formData.location?.lng ?? 0}
               onChange={(e) => handleLocationChange('lng', parseFloat(e.target.value))}
-              style={styles.inputNum}
+              className="w-full rounded-lg border border-gray-300 p-2 text-sm focus:border-blue-500 focus:outline-none"
             />
           </div>
           <div>
-            階数:
+            <span className="text-xs text-gray-500">階数</span>
             <input
               type="number"
               value={formData.location?.floor ?? 1}
               onChange={(e) => handleLocationChange('floor', parseInt(e.target.value, 10))}
-              style={styles.inputNum}
+              className="w-full rounded-lg border border-gray-300 p-2 text-sm focus:border-blue-500 focus:outline-none"
             />
           </div>
         </div>
       </div>
 
-      <div style={styles.field}>
-        <label style={styles.label}>1グループの最大人数</label>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-gray-700">1グループの最大人数</label>
         <input
           type="number"
           min="1"
           value={formData.max_party_size || 1}
           onChange={(e) => handleInputChange('max_party_size', parseInt(e.target.value, 10))}
-          style={styles.inputNum}
+          className="w-32 rounded-lg border border-gray-300 p-2 text-sm focus:border-blue-500 focus:outline-none"
         />
       </div>
 
-      <div style={styles.field}>
-        <label style={styles.label}>制限事項 (Restrictions)</label>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-gray-700">制限事項</label>
         <input
           type="text"
           value={formData.restrictions || ''}
           onChange={(e) => handleInputChange('restrictions', e.target.value)}
-          style={styles.input}
+          className="rounded-lg border border-gray-300 p-2.5 text-sm focus:border-blue-500 focus:outline-none"
         />
       </div>
 
-      <div style={styles.field}>
-        <label style={styles.label}>バリアフリー・アクセシビリティ</label>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-semibold text-gray-700">
+          バリアフリー・アクセシビリティ
+        </label>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {ACCESSIBILITY_OPTIONS.map((item) => (
-            <label key={item.key} style={{ fontSize: '14px', cursor: 'pointer' }}>
+            <label key={item.key} className="flex items-center gap-2 text-sm text-gray-700">
               <input
                 type="checkbox"
                 checked={(formData.accessibility || []).includes(item.key as any)}
                 onChange={() => handleAccessibilityToggle(item.key)}
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              {' ' + item.label}
+              {item.label}
             </label>
           ))}
         </div>
@@ -240,69 +247,14 @@ export const EventInfoEditor: React.FC<EventInfoEditorProps> = ({
       <button
         type="submit"
         disabled={isSubmitting}
-        style={{
-          ...styles.submitBtn,
-          backgroundColor: isSubmitting ? '#ccc' : '#228BE6',
-        }}
+        className={`w-full rounded-lg py-3 text-base font-bold text-white shadow transition ${
+          isSubmitting
+            ? 'cursor-not-allowed bg-gray-400'
+            : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
+        }`}
       >
-        {isSubmitting ? '処理中...' : '更新'}
+        {isSubmitting ? '処理中...' : '確定して送信'}
       </button>
     </form>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  form: {
-    maxWidth: '600px',
-    margin: '0 auto',
-    padding: '20px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-  },
-  field: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '6px',
-  },
-  label: {
-    fontWeight: 'bold',
-    fontSize: '14px',
-  },
-  input: {
-    padding: '8px',
-    fontSize: '14px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-  },
-  textarea: {
-    padding: '8px',
-    fontSize: '14px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-  },
-  select: {
-    padding: '8px',
-    fontSize: '14px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-  },
-  inputNum: {
-    padding: '6px',
-    fontSize: '14px',
-    width: '100px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    marginLeft: '4px',
-  },
-  submitBtn: {
-    marginTop: '12px',
-    padding: '12px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-  },
 };
