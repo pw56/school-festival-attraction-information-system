@@ -7,9 +7,16 @@ paths:
   /api/events/mappings:
     get:
       tags:
-        - Events
+        - System
       summary: 出し物IDマッピング情報の取得
       operationId: getEventIdMappings
+      parameters:
+        - name: admin_id
+          in: query
+          required: true
+          description: 管理者ID（主にCloudflareのsub）。認証を兼ねる。
+          schema:
+            type: string
       responses:
         '200':
           description: 公開用IDとsecret_idの対マップ。

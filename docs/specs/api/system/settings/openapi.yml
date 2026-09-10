@@ -46,7 +46,7 @@ paths:
                     message: "Unable to fetch system settings."
     put:
       tags:
-        - SystemSettings
+        - System
       summary: システム全体設定の更新
       operationId: updateSystemSettings
       requestBody:
@@ -54,7 +54,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'https://example.com/schemas/system_settings.json'
+              type: object
+              required:
+                - admin_id
+              properties:
+                admin_id:
+                  type: string
+                  description: 管理者ID（主にCloudflareのsub）。認証を兼ねる。
+                settings:
+                  $ref: 'https://example.com/schemas/system_settings.json'
       responses:
         '200':
           description: 更新後のシステム全体設定情報。

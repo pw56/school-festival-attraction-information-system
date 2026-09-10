@@ -12,6 +12,12 @@ paths:
       summary: 待機列のグループのログの取得
       operationId: getQueueGroupLogs
       parameters:
+        - name: admin_id
+          in: query
+          required: true
+          description: 管理者ID（主にCloudflareのsub）。認証を兼ねる。
+          schema:
+            type: string
         - name: start_at
           in: query
           required: false
