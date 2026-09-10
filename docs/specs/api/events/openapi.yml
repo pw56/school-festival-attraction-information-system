@@ -4,6 +4,10 @@ info:
   version: 1.0.0
   description: 出し物に関するAPI
 
+tags:
+  - name: AdminEvents
+    description: 管理者向けイベント操作
+
 paths:
   /api/events/crowd-levels:
     get:

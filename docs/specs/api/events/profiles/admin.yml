@@ -1,8 +1,6 @@
-# openapi: 3.1.0
-# info:
-#   title: Admin Events API
-#   description: 出し物登録・設定編集用API（管理者向けAPI群）。
-#   version: 1.0.0
+tags:
+  - name: AdminEvents
+    description: 管理者向けイベント操作
 
 paths:
   /api/events/profiles:
