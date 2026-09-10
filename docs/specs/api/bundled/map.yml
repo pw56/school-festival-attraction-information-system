@@ -1,0 +1,72 @@
+openapi: 3.1.0
+info:
+  title: Map API
+  version: 1.0.0
+  description: マップの取得および更新API
+paths:
+  /api/maps:
+    get:
+      openapi: 3.1.0
+      info:
+        title: Get Map
+        description: 3Dマップ情報を取得するAPI。
+        version: 1.0.0
+      paths:
+        /api/map:
+          get:
+            tags:
+              - Map
+            summary: マップ情報取得
+            operationId: getMap
+            responses:
+              '200':
+                description: マップデータ。
+                content:
+                  application/json:
+                    schema:
+                      $ref: https://example.com/schemas/map.json
+              '400':
+                description: 不正なリクエスト、またはマップ情報の取得失敗。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+    put:
+      openapi: 3.1.0
+      info:
+        title: Update Map
+        description: 3Dマップ情報を更新（存在しない場合は作成）するAPI（管理者向けAPI群）。
+        version: 1.0.0
+      paths:
+        /api/map:
+          put:
+            tags:
+              - Map
+            summary: マップ情報更新(作成・上書き)
+            operationId: updateMap
+            requestBody:
+              required: true
+              content:
+                application/json:
+                  schema:
+                    $ref: https://example.com/schemas/map.json
+            responses:
+              '200':
+                description: 更新（または作成）されたマップデータ。
+                content:
+                  application/json:
+                    schema:
+                      $ref: https://example.com/schemas/map.json
+              '400':
+                description: 不正なリクエスト、またはマップ情報の更新失敗。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+components: {}
