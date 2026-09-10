@@ -8,5 +8,5 @@ paths:
   /api/system/settings:
     $ref: './settings/openapi.yml'
 
-  /api/system/event-ids:
-    $ref: './event_ids/openapi.yml'
+  /api/system/event-id-mappings:
+    $ref: './event_id_mappings/openapi.yml'

@@ -1,6 +1,6 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 $id: "https://example.com/schemas/event_id_mapping.json"
-title: "EventIdMapping"
+title: "EventIdMappings"
 description: "出し物の公開用IDと管理用ID(secret_id、UUID)の対応関係マップ。"
 type: "object"
 examples:
