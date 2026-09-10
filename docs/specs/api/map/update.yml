@@ -15,7 +15,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './schema.yml'
+              type: object
+              required:
+                - admin_id
+              properties:
+                admin_id:
+                  type: string
+                  description: 管理者ID（主にCloudflareのsub）。認証を兼ねる。
+                map:
+                  $ref: './schema.yml'
       responses:
         '200':
           description: 更新（または作成）されたマップデータ。
