@@ -16,10 +16,14 @@ paths:
             schema:
               type: object
               required:
+                - admin_id
                 - thumbnail_data
               allOf:
                 - $ref: './schema.yml'
               properties:
+                admin_id:
+                  type: string
+                  description: 管理者ID（主にCloudflareのsub）。認証を兼ねる。
                 id: false
                 thumbnail_path: false
                 thumbnail_data:
@@ -84,12 +88,20 @@ paths:
       parameters:
         - name: secret_id
           in: query
-          required: true
+          required: false
           schema:
             type: string
           description: 削除対象の管理用ID
+        - name: admin_id
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 管理者ID
       responses:
         '200':
           description: 削除完了。
         '204':
           description: 削除完了 (元から存在しなかった場合)。
+        '400':
+          description: 不正なリクエスト。
