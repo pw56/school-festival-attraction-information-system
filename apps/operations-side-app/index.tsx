@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import './App';
+import App from './App';
 import { SdkClient } from '../utils/sdk';
 
 // SdkClient のインスタンスを作成（実装に応じて）
