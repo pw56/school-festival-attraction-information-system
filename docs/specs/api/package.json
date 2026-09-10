@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "@hey-api/openapi-ts": "^0.99.0",
-    "@redocly/cli": "^2.51.2"
-  },
-  "devDependencies": {
-    "typescript": "^6.0.3"
-  }
-}
