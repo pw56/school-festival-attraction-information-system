@@ -1,0 +1,11 @@
+openapi: 3.1.0
+info:
+  title: Logs API
+  version: 1.0.0
+  description: ログに関するAPI
+
+paths:
+  /api/logs/:
+    get:
+      $ref: './crowd_levels/get.yml'
+

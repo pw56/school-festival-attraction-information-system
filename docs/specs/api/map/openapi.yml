@@ -5,7 +5,7 @@ info:
   description: マップの取得および更新API
 
 paths:
-  /maps:
+  /api/maps:
     get:
       $ref: './get.yml'
     put:

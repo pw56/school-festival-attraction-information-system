@@ -5,8 +5,8 @@ info:
   description: システム全体の共通設定やイベントIDの管理API
 
 paths:
-  /system/settings:
+  /api/system/settings:
     $ref: './settings/openapi.yml'
 
-  /system/event-ids:
+  /api/system/event-ids:
     $ref: './event_ids/openapi.yml'
