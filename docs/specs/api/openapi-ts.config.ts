@@ -9,7 +9,7 @@ export default defineConfig({
     {
       name: '@hey-api/sdk',  // SDKの生成プラグイン
       operations: { strategy: 'byTags' }, // タグごとにクラス分割
-      client: '@hey-api/client-fetch',
+      client: '@hey-api/client-fetch'
     }
   ]
 });
