@@ -14,6 +14,7 @@ export type UpdateEventStatusBody = {
 };
 
 export type CreateEventParams = {
+  admin_id: string;
   thumbnail_data: Blob | File;
   eventData: Partial<Event>;
 };
@@ -25,7 +26,8 @@ export type UpdateEventParams = {
 };
 
 export type DeleteEventParams = {
-  secret_id: string;
+  secret_id?: string;
+  admin_id?: string;
 };
 
 export class AdminEventsApi {
@@ -58,6 +60,7 @@ export class AdminEventsApi {
     options?: Omit<RequestOptions, 'headers'> & { headers?: Record<string, string> }
   ): Promise<ApiResponse<CreateEventResponse>> {
     const formData = new FormData();
+    formData.append('admin_id', params.admin_id);
     formData.append('thumbnail_data', params.thumbnail_data);
 
     Object.entries(params.eventData).forEach(([key, value]) => {
@@ -123,10 +126,14 @@ export class AdminEventsApi {
     params: DeleteEventParams,
     options?: Omit<RequestOptions, 'query'>
   ): Promise<ApiResponse<void>> {
+    const query: Record<string, string> = {};
+    if (params.secret_id !== undefined) query.secret_id = params.secret_id;
+    if (params.admin_id !== undefined) query.admin_id = params.admin_id;
+
     return this.#client.request<void>('/api/events/profiles', {
       ...options,
       method: 'DELETE',
-      query: { secret_id: params.secret_id },
+      query,
     });
   }
 }
