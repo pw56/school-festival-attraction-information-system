@@ -20,7 +20,7 @@ paths:
               required:
                 - thumbnail_data
               allOf:
-                - $ref: 'https://example.com/schemas/event.json'
+                - $ref: './schema.yml'
               properties:
                 id: false
                 thumbnail_path: false
@@ -42,7 +42,7 @@ paths:
                   secret_id:
                     type: string
                   event:
-                    $ref: 'https://example.com/schemas/event.json'
+                    $ref: './schema.yml'
     put:
       tags:
         - AdminEvents
@@ -67,7 +67,7 @@ paths:
                   format: binary
                   description: サムネイル画像データ（WebP または AVIF）
               allOf:
-                - $ref: 'https://example.com/schemas/event.json'
+                - $ref: './schema.yml'
             encoding:
               thumbnail_data:
                 contentType: image/webp, image/avif
@@ -77,7 +77,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'https://example.com/schemas/event.json'
+                $ref: './schema.yml'
     delete:
       tags:
         - AdminEvents

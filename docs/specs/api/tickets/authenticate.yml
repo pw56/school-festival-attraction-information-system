@@ -18,7 +18,7 @@ paths:
 
               properties:
                 ticket_id:
-                  $ref: "https://example.com/schemas/ticket.json#/properties/ticket_id"
+                  $ref: "./schema.yml#/properties/ticket_id"
                 auth_code:
                   type: string
                   description: 認証に使用する認証コード（TOTPワンタイムコードまたはトークン）。

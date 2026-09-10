@@ -19,7 +19,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: 'https://example.com/schemas/event.json'
+                  $ref: './schema.yml'
               examples:
                 all_events:
                   value:

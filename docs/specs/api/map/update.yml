@@ -15,14 +15,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'https://example.com/schemas/map.json'
+              $ref: './schema.yml'
       responses:
         '200':
           description: 更新（または作成）されたマップデータ。
           content:
             application/json:
               schema:
-                $ref: 'https://example.com/schemas/map.json'
+                $ref: './schema.yml'
         '400':
           description: 不正なリクエスト、またはマップ情報の更新失敗。
           content:

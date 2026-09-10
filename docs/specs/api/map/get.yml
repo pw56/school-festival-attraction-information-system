@@ -16,7 +16,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'https://example.com/schemas/map.json'
+                $ref: './schema.yml'
         '400':
           description: 不正なリクエスト、またはマップ情報の取得失敗。
           content:

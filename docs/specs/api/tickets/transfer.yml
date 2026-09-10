@@ -18,7 +18,7 @@ paths:
 
               properties:
                 ticket_id:
-                  $ref: "https://example.com/schemas/ticket.json#/properties/ticket_id"
+                  $ref: "./schema.yml#/properties/ticket_id"
                 fcmToken:
                   type: string
                   description: プッシュ通知に使用されるFCMトークン。

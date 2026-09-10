@@ -18,11 +18,11 @@ paths:
 
               properties:
                 event_id:
-                  $ref: "https://example.com/schemas/ticket.json#/properties/event_id"
+                  $ref: "./schema.yml#/properties/event_id"
                 ticket_slot:
-                  $ref: "https://example.com/schemas/ticket.json#/properties/ticket_slot"
+                  $ref: "./schema.yml#/properties/ticket_slot"
                 auth_type:
-                  $ref: "https://example.com/schemas/ticket.json#/properties/auth_type"
+                  $ref: "./schema.yml#/properties/auth_type"
                 fcmToken:
                   type: string
                   description: プッシュ通知に使用されるFCMトークン。
@@ -42,7 +42,7 @@ paths:
                 type: object
                 properties:
                   ticket:
-                    $ref: "https://example.com/schemas/ticket.json"
+                    $ref: "./schema.yml"
                   message:
                     type: string
                 required:

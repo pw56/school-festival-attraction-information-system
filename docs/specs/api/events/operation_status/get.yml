@@ -24,7 +24,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'https://example.com/schemas/operation_status.json'
+                $ref: './schema.yml'
               examples:
                 default:
                   value:

@@ -39,7 +39,7 @@ paths:
                         format: date-time
                         description: 地域を含むISO8601形式のタイムスタンプ
                       group_counts:
-                        $ref: 'https://example.com/schemas/queue_group_counts.json'
+                        $ref: './schema.yml'
       responses:
         '200':
           description: 送信完了。

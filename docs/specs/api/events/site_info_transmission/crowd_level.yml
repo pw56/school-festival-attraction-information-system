@@ -39,7 +39,7 @@ paths:
                         format: date-time
                         description: 地域を含むISO8601形式のタイムスタンプ
                       crowd_level:
-                        $ref: 'https://example.com/schemas/crowd_levels.json#/properties/crowd_level'
+                        $ref: '../crowd_levels/schema.yml#/properties/crowd_level'
       responses:
         '200':
           description: 送信完了。

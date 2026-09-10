@@ -8,4 +8,4 @@ required:
 additionalProperties: false
 properties:
   ticket:
-    $ref: "https://example.com/schemas/ticket.json"
+    $ref: "./schema.yml"

@@ -24,14 +24,14 @@ paths:
                   type: string
                   description: 管理用ID
               allOf:
-                - $ref: 'https://example.com/schemas/operation_status.json'
+                - $ref: './schema.yml'
       responses:
         '200':
           description: 運営状況の更新成功。
           content:
             application/json:
               schema:
-                $ref: 'https://example.com/schemas/operation_status.json'
+                $ref: './schema.yml'
               examples:
                 default:
                   value:

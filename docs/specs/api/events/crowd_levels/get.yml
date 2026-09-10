@@ -24,7 +24,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'https://example.com/schemas/crowd_levels.json'
+                $ref: './schema.yml'
               examples:
                 default:
                   value:

@@ -16,7 +16,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'https://example.com/schemas/system_settings.json'
+                $ref: './schema.yml'
               examples:
                 default:
                   value:
@@ -62,14 +62,14 @@ paths:
                   type: string
                   description: 管理者ID（主にCloudflareのsub）。認証を兼ねる。
                 settings:
-                  $ref: 'https://example.com/schemas/system_settings.json'
+                  $ref: './schema.yml'
       responses:
         '200':
           description: 更新後のシステム全体設定情報。
           content:
             application/json:
               schema:
-                $ref: 'https://example.com/schemas/system_settings.json'
+                $ref: './schema.yml'
         '400':
           description: 不正なリクエスト、または更新失敗。
           content:
