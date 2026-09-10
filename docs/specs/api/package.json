@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@hey-api/openapi-ts": "^0.99.0",
     "@openapitools/openapi-generator-cli": "^2.41.0",
     "@redocly/cli": "^2.51.2"
   }
