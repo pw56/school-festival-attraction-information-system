@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { SdkClient, Event, ApiError } from '../../utils/sdk';
+import { EventData } from '../App';
 import { processThumbnailImage } from '../utils/imageProcessor';
 
 interface EventInfoEditorProps {
-  sdkClient: SdkClient;
   secretId: string;
-  event: Event;
-  onUpdated: (updatedEvent: Event) => void;
+  event: EventData;
+  onUpdated: (updatedEvent: EventData) => void;
 }
 
 const EVENT_TYPES = [
@@ -47,16 +46,15 @@ const ACCESSIBILITY_OPTIONS = [
 ];
 
 export const EventInfoEditor: React.FC<EventInfoEditorProps> = ({
-  sdkClient,
   secretId,
   event,
   onUpdated,
 }) => {
-  const [formData, setFormData] = useState<Partial<Event>>({ ...event });
+  const [formData, setFormData] = useState<Partial<EventData>>({ ...event });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInputChange = (key: keyof Event, value: any) => {
+  const handleInputChange = (key: keyof EventData, value: any) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -74,9 +72,9 @@ export const EventInfoEditor: React.FC<EventInfoEditorProps> = ({
 
   const handleAccessibilityToggle = (key: string) => {
     const current = formData.accessibility || [];
-    const next = current.includes(key as any)
+    const next = current.includes(key)
       ? current.filter((item) => item !== key)
-      : [...current, key as any];
+      : [...current, key];
     setFormData((prev) => ({ ...prev, accessibility: next }));
   };
 
@@ -92,17 +90,27 @@ export const EventInfoEditor: React.FC<EventInfoEditorProps> = ({
     try {
       const processedBlob = await processThumbnailImage(selectedFile);
 
-      const response = await sdkClient.adminEvents.updateEvent({
-        secret_id: secretId,
-        thumbnail_data: processedBlob,
-        eventData: formData,
+      const bodyFormData = new FormData();
+      bodyFormData.append('secret_id', secretId);
+      bodyFormData.append('thumbnail', processedBlob, 'thumbnail.webp');
+      bodyFormData.append('eventData', JSON.stringify(formData));
+
+      const res = await fetch('https://example.com/admin/events', {
+        method: 'PUT',
+        body: bodyFormData,
       });
 
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
+      }
+
+      const updatedData: EventData = await res.json();
       alert('出し物情報を更新しました。');
-      onUpdated(response.data);
-    } catch (err) {
+      onUpdated(updatedData);
+    } catch (err: any) {
       console.error(err);
-      if (err instanceof ApiError) {
+      if (err instanceof Error) {
         alert(`更新に失敗しました: ${err.message}`);
       } else {
         alert('画像の処理または更新リクエスト中にエラーが発生しました。');
@@ -234,7 +242,7 @@ export const EventInfoEditor: React.FC<EventInfoEditorProps> = ({
             <label key={item.key} className="flex items-center gap-2 text-sm text-gray-700">
               <input
                 type="checkbox"
-                checked={(formData.accessibility || []).includes(item.key as any)}
+                checked={(formData.accessibility || []).includes(item.key)}
                 onChange={() => handleAccessibilityToggle(item.key)}
                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />

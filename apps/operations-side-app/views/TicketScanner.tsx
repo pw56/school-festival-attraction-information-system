@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import { QrScannerModal } from '../components/QrScannerModal';
-import { SdkClient, ApiError } from '../../utils/sdk';
 
-interface TicketScannerProps {
-  sdkClient: SdkClient;
-}
+interface TicketScannerProps {}
 
-export const TicketScanner: React.FC<TicketScannerProps> = ({ sdkClient }) => {
+export const TicketScanner: React.FC<TicketScannerProps> = () => {
   const [isScanning, setIsScanning] = useState(false);
 
   const handleScanSuccess = async (qrData: string) => {
@@ -26,15 +23,26 @@ export const TicketScanner: React.FC<TicketScannerProps> = ({ sdkClient }) => {
     }
 
     try {
-      await sdkClient.tickets.verifyTicket({
-        ticket_id: parsedPayload.ticket_id,
-        secret_id: parsedPayload.secret_id,
+      const res = await fetch('https://example.com/tickets/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ticket_id: parsedPayload.ticket_id,
+          secret_id: parsedPayload.secret_id,
+        }),
       });
 
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
+      }
+
       alert('整理券の認証に成功しました。');
-    } catch (error) {
-      if (error instanceof ApiError) {
-        alert(`通信エラー / APIエラー (${error.status}): ${error.message}`);
+    } catch (error: any) {
+      if (error instanceof Error) {
+        alert(`通信エラー / APIエラー: ${error.message}`);
       } else {
         alert('予期せぬエラーが発生しました。');
       }

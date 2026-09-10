@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { SdkClient, OperationStatus, ApiError } from '../../utils/sdk';
+
+export type OperationStatus = 'operating' | 'preparing' | 'paused' | 'under-maintenance';
 
 interface EventStatusEditorProps {
-  sdkClient: SdkClient;
   secretId: string;
   currentStatus?: OperationStatus;
   onStatusUpdated?: (newStatus: OperationStatus) => void;
@@ -16,7 +16,6 @@ const STATUS_OPTIONS: { key: OperationStatus; label: string }[] = [
 ];
 
 export const EventStatusEditor: React.FC<EventStatusEditorProps> = ({
-  sdkClient,
   secretId,
   currentStatus = 'operating',
   onStatusUpdated,
@@ -27,19 +26,30 @@ export const EventStatusEditor: React.FC<EventStatusEditorProps> = ({
   const handleUpdate = async () => {
     setIsUpdating(true);
     try {
-      await sdkClient.adminEvents.updateEventStatus({
-        secret_id: secretId,
-        status: status,
+      const res = await fetch('https://example.com/admin/events/status', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          secret_id: secretId,
+          status: status,
+        }),
       });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
+      }
 
       const label = STATUS_OPTIONS.find((s) => s.key === status)?.label;
       alert(`運営状況を「${label}」に更新しました。`);
       if (onStatusUpdated) {
         onStatusUpdated(status);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      if (err instanceof ApiError) {
+      if (err instanceof Error) {
         alert(`運営状況の更新に失敗しました: ${err.message}`);
       } else {
         alert('予期せぬエラーが発生しました。');

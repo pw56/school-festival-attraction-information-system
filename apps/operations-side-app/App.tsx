@@ -3,20 +3,35 @@ import { TicketScanner } from './views/TicketScanner';
 import { EventInfoEditor } from './views/EventInfoEditor';
 import { EventStatusEditor } from './views/EventStatusEditor';
 import { QrScannerModal } from './components/QrScannerModal';
-import { SdkClient, Event } from '../utils/sdk';
 
 type TabType = 'tickets' | 'info' | 'status';
 
-interface AppProps {
-  sdkClient: SdkClient;
+export interface LocationData {
+  lat: number;
+  lng: number;
+  floor: number;
 }
 
-const App: React.FC<AppProps> = ({ sdkClient }) => {
+export interface EventData {
+  id: string;
+  name: string;
+  type: string;
+  description?: string;
+  location: LocationData;
+  max_party_size?: number;
+  restrictions?: string;
+  accessibility?: string[];
+  [key: string]: any;
+}
+
+interface AppProps {}
+
+const App: React.FC<AppProps> = () => {
   const [activeTab, setActiveTab] = useState<TabType>('tickets');
   const [secretId, setSecretId] = useState<string | null>(null);
   const [pendingTab, setPendingTab] = useState<TabType | null>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const [eventData, setEventData] = useState<Event | null>(null);
+  const [eventData, setEventData] = useState<EventData | null>(null);
 
   const handleTabClick = (tab: TabType) => {
     if (tab === 'tickets') {
@@ -44,8 +59,14 @@ const App: React.FC<AppProps> = ({ sdkClient }) => {
         return;
       }
 
-      const response = await sdkClient.events.getEvents();
-      const targetEvent = response.data.find(
+      const res = await fetch('https://example.com/events');
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      const data = await res.json();
+      const events: EventData[] = Array.isArray(data) ? data : data.data || [];
+
+      const targetEvent = events.find(
         (e) => e.id === parsed.id || e.id === extractedSecretId
       );
 
@@ -58,7 +79,7 @@ const App: React.FC<AppProps> = ({ sdkClient }) => {
           name: parsed.name || '出し物',
           type: parsed.type || 'food_and_drink',
           location: parsed.location || { lat: 0, lng: 0, floor: 1 },
-        } as Event);
+        });
       }
 
       alert('成功: secret_id の認証に成功しました。');
@@ -113,11 +134,10 @@ const App: React.FC<AppProps> = ({ sdkClient }) => {
 
       {/* コンテンツ表示エリア */}
       <main className="p-2">
-        {activeTab === 'tickets' && <TicketScanner sdkClient={sdkClient} />}
+        {activeTab === 'tickets' && <TicketScanner />}
 
         {activeTab === 'info' && secretId && eventData && (
           <EventInfoEditor
-            sdkClient={sdkClient}
             secretId={secretId}
             event={eventData}
             onUpdated={(updated) => setEventData(updated)}
@@ -125,7 +145,7 @@ const App: React.FC<AppProps> = ({ sdkClient }) => {
         )}
 
         {activeTab === 'status' && secretId && (
-          <EventStatusEditor sdkClient={sdkClient} secretId={secretId} />
+          <EventStatusEditor secretId={secretId} />
         )}
       </main>
 
