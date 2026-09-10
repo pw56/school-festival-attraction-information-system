@@ -11,6 +11,9 @@ npx @redocly/cli bundle ./logs/openapi.yml -o ./bundled/logs.yml
 
 ## SDK生成
 ```bash
-npx openapi-ts -i ./bundled/events.yml -o ../../../apps/utils/sdk
-npx openapi-ts -i ./bundled/events.yml -o ../../../apps/utils/sdk
+npx openapi-ts -i ./bundled/events.yml -o ../../../apps/utils/sdk/events
+npx openapi-ts -i ./bundled/tickets.yml -o ../../../apps/utils/sdk/tickets
+npx openapi-ts -i ./bundled/map.yml -o ../../../apps/utils/sdk/map
+npx openapi-ts -i ./bundled/system.yml -o ../../../apps/utils/sdk/system
+npx openapi-ts -i ./bundled/logs.yml -o ../../../apps/utils/sdk/logs
 ```
