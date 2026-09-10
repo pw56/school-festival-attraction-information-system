@@ -1,0 +1,202 @@
+openapi: 3.1.0
+info:
+  title: Logs API
+  version: 1.0.0
+  description: ログに関するAPI
+paths:
+  /api/logs/queue-group:
+    get:
+      openapi: 3.1.0
+      info:
+        title: Queue Group Logs API
+        description: 待機列のグループの情報のログデータ（CSV形式）を取得するAPI。
+        version: 1.0.0
+      paths:
+        /api/logs/queue-group:
+          get:
+            tags:
+              - Logs
+            summary: 待機列のグループのログの取得
+            operationId: getQueueGroupLogs
+            parameters:
+              - name: admin_id
+                in: query
+                required: true
+                description: 管理者ID（主にCloudflareのsub）。認証を兼ねる。
+                schema:
+                  type: string
+              - name: start_at
+                in: query
+                required: false
+                schema:
+                  type: string
+                  format: date-time
+                description: 取得開始日時（ISO 8601形式）
+              - name: end_at
+                in: query
+                required: false
+                schema:
+                  type: string
+                  format: date-time
+                description: 取得終了日時（ISO 8601形式）
+            responses:
+              '200':
+                description: タイムスタンプとグループ人数の配列（JSON形式の文字列）を含むCSVデータ。
+                content:
+                  text/csv:
+                    schema:
+                      type: string
+                      description: |
+                        CSVフォーマット:
+                        timestamp,queue_group_counts
+                        2026-09-10T09:00:00Z,"[4,2,1,3]"
+                    examples:
+                      default:
+                        value: |-
+                          timestamp,queue_group_counts
+                          2026-09-10T09:00:00Z,"[4,2,1,3]"
+                          2026-09-10T09:05:00Z,"[2,1,5]"
+              '400':
+                description: 不正なリクエスト、またはログ情報の取得失敗。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Unable to fetch logs.
+  /api/logs/wait-times:
+    get:
+      openapi: 3.1.0
+      info:
+        title: Wait Times Logs API
+        description: 待ち時間情報（分単位）のログデータ（CSV形式）を取得するAPI。
+        version: 1.0.0
+      paths:
+        /api/logs/wait-times:
+          get:
+            tags:
+              - Logs
+            summary: 待ち時間ログの取得
+            operationId: getWaitTimesLogs
+            parameters:
+              - name: admin_id
+                in: query
+                required: true
+                description: 管理者ID（主にCloudflareのsub）。認証を兼ねる。
+                schema:
+                  type: string
+              - name: start_at
+                in: query
+                required: false
+                schema:
+                  type: string
+                  format: date-time
+                description: 取得開始日時（ISO 8601形式）
+              - name: end_at
+                in: query
+                required: false
+                schema:
+                  type: string
+                  format: date-time
+                description: 取得終了日時（ISO 8601形式）
+            responses:
+              '200':
+                description: タイムスタンプと待ち時間（分単位）のCSVデータ。
+                content:
+                  text/csv:
+                    schema:
+                      type: string
+                      description: |
+                        CSVフォーマット:
+                        timestamp,wait_time_minutes
+                        2026-09-10T09:00:00Z,15
+                    examples:
+                      default:
+                        value: |-
+                          timestamp,wait_time_minutes
+                          2026-09-10T09:00:00Z,15
+                          2026-09-10T09:05:00Z,20
+              '400':
+                description: 不正なリクエスト、またはログ情報の取得失敗。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Unable to fetch logs.
+  /api/logs/ticket-usages:
+    get:
+      openapi: 3.1.0
+      info:
+        title: Ticket Usages Logs API
+        description: 整理券・チケット利用（通過）時のタイムスタンプログデータ（CSV形式）を取得するAPI。
+        version: 1.0.0
+      paths:
+        /api/logs/ticket-usages:
+          get:
+            tags:
+              - Logs
+            summary: チケット利用ログの取得
+            operationId: getTicketUsagesLogs
+            parameters:
+              - name: admin_id
+                in: query
+                required: true
+                description: 管理者ID（主にCloudflareのsub）。認証を兼ねる。
+                schema:
+                  type: string
+              - name: start_at
+                in: query
+                required: false
+                schema:
+                  type: string
+                  format: date-time
+                description: 取得開始日時（ISO 8601形式）
+              - name: end_at
+                in: query
+                required: false
+                schema:
+                  type: string
+                  format: date-time
+                description: 取得終了日時（ISO 8601形式）
+            responses:
+              '200':
+                description: 利用日時のタイムスタンプ一覧CSVデータ。
+                content:
+                  text/csv:
+                    schema:
+                      type: string
+                      description: |
+                        CSVフォーマット:
+                        timestamp
+                        2026-09-10T09:00:00Z
+                    examples:
+                      default:
+                        value: |-
+                          timestamp
+                          2026-09-10T09:00:00Z
+                          2026-09-10T09:01:23Z
+              '400':
+                description: 不正なリクエスト、またはログ情報の取得失敗。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Unable to fetch logs.
+components: {}
