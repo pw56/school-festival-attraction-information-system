@@ -1,0 +1,21 @@
+openapi: 3.1.0
+info:
+  title: API
+  version: 1.0.0
+  description: このプロジェクトのAPIのOASのエントリーポイント
+
+paths:
+  /api/events:
+    $ref: './events/openapi.yml'
+
+  /api/tickets:
+    $ref: './tickets/openapi.yml'
+
+  /api/map:
+    $ref: './map/openapi.yml'
+  
+  /api/system:
+    $ref: './system/openapi.yml'
+
+  /api/logs:
+    $ref: './logs/openapi.yml'
