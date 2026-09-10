@@ -2,6 +2,7 @@ import { HttpClient } from './utils/HttpClient';
 import { EventsApi, AdminEventsApi } from './apis/events';
 import { LogsApi } from './apis/logs';
 import { TicketsApi } from './apis/tickets';
+import { MapApi } from './apis/map';
 import type { ClientOptions } from './types';
 
 export class SdkClient {
@@ -10,6 +11,7 @@ export class SdkClient {
   readonly adminEvents: AdminEventsApi;
   readonly logs: LogsApi;
   readonly tickets: TicketsApi;
+  readonly map: MapApi;
 
   constructor(options: ClientOptions) {
     this.http = new HttpClient(options);
@@ -17,6 +19,7 @@ export class SdkClient {
     this.adminEvents = new AdminEventsApi(this.http);
     this.logs = new LogsApi(this.http);
     this.tickets = new TicketsApi(this.http);
+    this.map = new MapApi(this.http);
   }
 }
 
@@ -27,3 +30,4 @@ export * from './utils/validators';
 export * from './apis/events';
 export * from './apis/logs';
 export * from './apis/tickets';
+export * from './apis/map';
