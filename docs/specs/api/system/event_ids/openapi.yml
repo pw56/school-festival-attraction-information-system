@@ -4,7 +4,7 @@ info:
   description: 出し物の公開用IDと管理用secret_idの対応情報を取得するAPI（運営向けAPI群）。
   version: 1.0.0
 paths:
-  /api/events/mappings:
+  /api/system/mappings:
     get:
       tags:
         - System

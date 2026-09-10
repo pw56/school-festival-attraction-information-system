@@ -4,10 +4,10 @@ info:
   description: システム全体（文化祭全体）の設定を取得・更新するAPI（管理者向けAPI群）。
   version: 1.0.0
 paths:
-  /api/system-settings:
+  /api/system:
     get:
       tags:
-        - SystemSettings
+        - System
       summary: システム全体設定の取得
       operationId: getSystemSettings
       responses:
