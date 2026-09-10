@@ -2,13 +2,13 @@
 import { defineConfig } from '@hey-api/openapi-ts';
 
 export default defineConfig({
-  input: '',
-  output: '',
+  input: './openapi.yml',
+  output: '../../../apps/utils/sdk',
   plugins: [
     '@hey-api/typescript', // 型定義の生成
     {
       name: '@hey-api/sdk',  // SDKの生成プラグイン
-      operations: { strategy: 'byTags' }, // タグごとにクラス分割
+      operations: { strategy: 'byTags', asClass }, // タグごとにクラス分割
       client: '@hey-api/client-fetch',
     }
   ]
