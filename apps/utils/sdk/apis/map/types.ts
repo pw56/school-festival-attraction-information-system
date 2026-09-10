@@ -74,6 +74,4 @@ export type UpdateMapBody = {
   map?: Map3DModel;
 };
 
-export type ErrorResponse = {
-  message?: string;
-};
+export type { ErrorResponse } from '../../types';

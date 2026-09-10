@@ -17,3 +17,7 @@ export type ApiResponse<T = unknown> = {
   statusText: string;
   headers: Headers;
 };
+
+export type ErrorResponse = {
+  message?: string;
+};

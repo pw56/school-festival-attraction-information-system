@@ -1,6 +1,6 @@
 import type { HttpClient } from '../../utils/HttpClient';
 import { validateData, type Validator } from '../../utils/validators';
-import type { RequestOptions, ApiResponse } from '../../sdk/types';
+import type { RequestOptions, ApiResponse } from '../../types';
 import type { Map3DModel, UpdateMapBody } from './types';
 
 export class MapApi {
