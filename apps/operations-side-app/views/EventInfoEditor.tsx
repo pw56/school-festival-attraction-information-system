@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SdkClient, Event, ApiError } from '../sdk';
+import { SdkClient, Event, ApiError } from '../../utils/sdk';
 import { processThumbnailImage } from '../utils/imageProcessor';
 
 interface EventInfoEditorProps {
