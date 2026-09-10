@@ -1,0 +1,447 @@
+openapi: 3.1.0
+info:
+  title: Events API
+  version: 1.0.0
+  description: 出し物に関するAPI
+paths:
+  /api/events/crowd-levels:
+    get:
+      paths:
+        /api/events/crowd-levels:
+          get:
+            tags:
+              - Events
+            summary: 混雑具合取得
+            operationId: getCrowdLevel
+            parameters:
+              - name: id
+                in: query
+                required: true
+                schema:
+                  type: string
+                description: 公開ID
+            responses:
+              '200':
+                description: 混雑具合情報。
+                content:
+                  application/json:
+                    schema:
+                      $ref: ./schema.yml
+                    examples:
+                      default:
+                        value:
+                          id: uuid
+                          crowd_level: normal
+              '400':
+                description: 不正なリクエスト、または混雑具合情報の取得失敗。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Unable to fetch crowd level.
+              '404':
+                description: 出し物が存在しない。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Event not found.
+              '501':
+                description: 出し物が混雑具合の取得APIに対応していない。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Crowd level tracking is not supported for this event.
+  /api/events/operation-status:
+    get:
+      paths:
+        /api/events/operation-status:
+          get:
+            tags:
+              - Events
+            summary: 出し物運営状況取得
+            operationId: getEventStatus
+            parameters:
+              - name: id
+                in: query
+                required: true
+                schema:
+                  type: string
+                description: 出し物のID
+            responses:
+              '200':
+                description: 運営状況の取得成功。
+                content:
+                  application/json:
+                    schema:
+                      $ref: ./schema.yml
+                    examples:
+                      default:
+                        value:
+                          status: operating
+              '400':
+                description: 不正なリクエスト、または出し物運営状況の取得失敗。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Unable to fetch event status.
+              '404':
+                description: 出し物が存在しない。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Event not found.
+              '501':
+                description: 出し物が運営状況の取得APIに対応していない。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Status tracking is not supported for this event.
+    put:
+      paths:
+        /api/events/operation-status:
+          put:
+            tags:
+              - AdminEvents
+            summary: 出し物運営状況更新
+            operationId: updateEventStatus
+            requestBody:
+              required: true
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    required:
+                      - secret_id
+                    properties:
+                      secret_id:
+                        type: string
+                        description: 管理用ID
+                    allOf:
+                      - $ref: ./schema.yml
+            responses:
+              '200':
+                description: 運営状況の更新成功。
+                content:
+                  application/json:
+                    schema:
+                      $ref: ./schema.yml
+                    examples:
+                      default:
+                        value:
+                          status: operating
+              '400':
+                description: 不正なリクエスト、または更新処理失敗。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Invalid status value.
+              '404':
+                description: 対象の出し物が存在しない。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Event not found.
+  /api/events/profiles:
+    get:
+      paths:
+        /api/events/profiles:
+          get:
+            tags:
+              - Events
+            operationId: getEvents
+            responses:
+              '200':
+                description: 出し物の配列。
+                content:
+                  application/json:
+                    schema:
+                      type: array
+                      items:
+                        $ref: ./schema.yml
+                    examples:
+                      all_events:
+                        value:
+                          - id: uuid
+                            name: エキサイティングコースター
+                            thumbnail_path: /events/thumbnails/uuid.webp
+                            description: 強烈な振動と急降下が特徴のコースターです。
+                            operating_hour_rules:
+                              timezone: Asia/Tokyo
+                              rules:
+                                - condition: default
+                                  operating_hours:
+                                    - - '10:00'
+                                      - '18:00'
+                            duration:
+                              duration_seconds: 180
+                              is_approximate: false
+                              margin_seconds: 0
+                            location:
+                              lat: 35.681236
+                              lng: 139.767125
+                              floor: 1
+                            max_party_size: 4
+                            type: vehicles
+                            restrictions: 妊娠中の方は利用をご遠慮ください。
+                            accessibility:
+                              - wheelchair_accessible
+                            available_ticket_slots:
+                              timezone: Asia/Tokyo
+                              rules:
+                                - condition: default
+                                  target_period:
+                                    - '10:00'
+                                    - '10:30'
+                                  remaining_tickets: 15
+              '400':
+                description: 不正なリクエスト、または出し物情報の取得失敗。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Unable to fetch events.
+  /api/events/wait-times:
+    get:
+      paths:
+        /api/events/wait-times:
+          get:
+            tags:
+              - Events
+            summary: 待ち時間取得
+            operationId: getWaitTime
+            parameters:
+              - name: id
+                in: query
+                required: true
+                schema:
+                  type: string
+                description: 公開ID
+            responses:
+              '200':
+                description: 待ち時間情報。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - id
+                        - wait_time_minutes
+                      additionalProperties: false
+                      properties:
+                        id:
+                          type: string
+                        wait_time_minutes:
+                          type: integer
+                          minimum: 0
+                    examples:
+                      default:
+                        value:
+                          id: uuid
+                          wait_time_minutes: 15
+              '400':
+                description: 不正なリクエスト、または待ち時間情報の取得失敗。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Unable to fetch wait time.
+              '404':
+                description: 出し物が存在しない。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Event not found.
+              '501':
+                description: 出し物が待ち時間の取得APIに対応していない。
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    examples:
+                      default:
+                        value:
+                          message: Wait time tracking is not supported for this event.
+  /api/events/site-info-transmission/crowd-level:
+    paths:
+      /api/events/site-info-transmission/crowd-level:
+        post:
+          tags:
+            - Events
+          summary: 混雑具合情報送信
+          operationId: transmitCrowdLevels
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - secret_id
+                    - crowd_levels
+                  additionalProperties: false
+                  properties:
+                    secret_id:
+                      type: string
+                      description: 運営用の出し物ID
+                    crowd_levels:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - timestamp
+                          - crowd_level
+                        additionalProperties: false
+                        properties:
+                          timestamp:
+                            type: string
+                            format: date-time
+                            description: 地域を含むISO8601形式のタイムスタンプ
+                          crowd_level:
+                            $ref: ../crowd_levels/schema.yml#/properties/crowd_level
+          responses:
+            '200':
+              description: 送信完了。
+            '400':
+              description: 不正なリクエスト、またはデータの送信失敗。
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  examples:
+                    default:
+                      value:
+                        message: Unable to transmit crowd level data.
+  /api/events/site-info-transmission/queue-group:
+    paths:
+      /api/events/site-info-transmission/queue-groups:
+        post:
+          tags:
+            - Events
+          summary: 待機列グループ情報送信
+          operationId: transmitQueueGroups
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - secret_id
+                    - queue_groups
+                  additionalProperties: false
+                  properties:
+                    secret_id:
+                      type: string
+                      description: 運営用の出し物ID
+                    queue_groups:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - timestamp
+                          - group_counts
+                        additionalProperties: false
+                        properties:
+                          timestamp:
+                            type: string
+                            format: date-time
+                            description: 地域を含むISO8601形式のタイムスタンプ
+                          group_counts:
+                            $ref: ./schema.yml
+          responses:
+            '200':
+              description: 送信完了。
+            '400':
+              description: 不正なリクエスト、またはデータの送信失敗。
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  examples:
+                    default:
+                      value:
+                        message: Unable to transmit queue group data.
+components: {}
