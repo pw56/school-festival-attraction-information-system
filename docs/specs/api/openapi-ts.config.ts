@@ -8,7 +8,7 @@ export default defineConfig({
     '@hey-api/typescript', // 型定義の生成
     {
       name: '@hey-api/sdk',  // SDKの生成プラグイン
-      asClass: true,         // クラス形式として出力
+      operations: { strategy: 'byTags' }, // タグごとにクラス分割
       client: '@hey-api/client-fetch',
     }
   ]
